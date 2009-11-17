@@ -1,0 +1,19 @@
+name:		deepseq
+version:	1.0.0.0
+license:	BSD3
+license-file:	LICENSE
+maintainer:	libraries@haskell.org
+synopsis:	Fully evaluate data structures
+description:
+    This package provides a "deep" version of seq, for for fully evluating
+    data structures.
+build-type:     Simple
+cabal-version:  >=1.2
+
+library {
+  exposed-modules: Control.DeepSeq
+  build-depends: base       >= 3   && < 5, 
+                 containers >= 0.2 && < 0.4,
+                 array      >= 0.2 && < 0.4
+  ghc-options: -Wall
+}
