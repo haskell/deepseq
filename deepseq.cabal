@@ -9,7 +9,7 @@ description:
     This package provides a \"deep\" version of seq, for fully evluating
     data structures.
 build-type:     Simple
-cabal-version:  >=1.2
+cabal-version:  >=1.6
 
 source-repository head
     type:     darcs
