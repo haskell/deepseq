@@ -8,10 +8,39 @@
 -- Stability   :  stable
 -- Portability :  portable
 --
--- Provides an overloaded function 'deepseq' for fully evaluating data
--- structures.
--- 
-
+-- This module provides an overloaded function, 'deepseq', for fully
+-- evaluating data structures (that is, evaluating to \"Normal Form\").
+--
+-- A typical use is to prevent resource leaks in lazy IO programs, by
+-- forcing all characters from a file to be read. For example:
+--
+-- > import System.IO
+-- > import Control.DeepSeq
+-- > 
+-- > main = do
+-- >     h <- openFile "f" ReadMode
+-- >     s <- hGetContents h
+-- >     s `deepseq` hClose h
+-- >     return s
+--
+-- 'deepseq' differs from 'seq' as it traverses data structures deeply,
+-- for example, 'seq' will evaluate only to the first constructor in
+-- the list:
+--
+-- > > [1,2,undefined] `seq` 3
+-- > 3
+--
+-- While 'deepseq' will force evaluation of all the list elements:
+--
+-- > > [1,2,undefined] `deepseq` 3
+-- > *** Exception: Prelude.undefined
+--
+-- Another common use is to ensure any exceptions hidden within lazy
+-- fields of a data structure do not leak outside the scope of the
+-- exception handler, or to force evaluation of a data structure in one
+-- thread, before passing to another thread (preventing work moving to
+-- the wrong threads).
+--
 module Control.DeepSeq (
      deepseq,
      NFData(..),
@@ -28,11 +57,13 @@ import Data.IntSet
 import Data.Tree
 import Data.Array
 
--- | Fully evaluates its argument.  The name 'deepseq' is used to
--- illustrate the relationship to 'seq': where 'seq' is shallow in
--- the sense that it only evaluates the top level of its argument,
--- 'deepseq' traverses the entire data structure evaluating it
--- completely.
+-- | 'deepseq': fully evaluates the first argument, before returning the
+-- second.
+--
+-- The name 'deepseq' is used to illustrate the relationship to 'seq':
+-- where 'seq' is shallow in the sense that it only evaluates the top
+-- level of its argument, 'deepseq' traverses the entire data structure
+-- evaluating it completely.
 --
 -- 'deepseq' can be useful for forcing pending exceptions,
 -- eradicating space leaks, or forcing lazy I/O to happen.  It is
@@ -48,7 +79,7 @@ import Data.Array
 deepseq :: NFData a => a -> b -> b
 deepseq a b = rnf a `seq` b
 
--- A class of types that can be fully evaluated.
+-- | A class of types that can be fully evaluated.
 class NFData a where
     -- | rnf should reduce its argument to normal form (that is, fully
     -- evaluate all sub-components), and then return '()'.
