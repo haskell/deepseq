@@ -42,7 +42,7 @@
 -- the wrong threads).
 --
 module Control.DeepSeq (
-     deepseq,
+     deepseq, ($!!), force,
      NFData(..),
   ) where
 
@@ -56,6 +56,8 @@ import Data.IntMap
 import Data.IntSet
 import Data.Tree
 import Data.Array
+
+infixr 0 $!!
 
 -- | 'deepseq': fully evaluates the first argument, before returning the
 -- second.
@@ -78,6 +80,23 @@ import Data.Array
 --
 deepseq :: NFData a => a -> b -> b
 deepseq a b = rnf a `seq` b
+
+-- | the deep analogue of '$!'.  In the expression @f $!! x@, @x@ is
+-- fully evaluated before the function @f@ is applied to it.
+($!!) :: (NFData a) => (a -> b) -> a -> b
+f $!! x = x `deepseq` f x
+
+-- | a variant of 'deepseq' that is useful in some circumstances:
+--
+-- > force x = x `deepseq` x
+--
+-- @force x@ fully evaluates @x@, and then returns it.  Note that
+-- @force x@ only performs evaluation when the value of @force x@
+-- itself is demanded, so essentially it turns shallow evaluation into
+-- deep evaluation.
+
+force :: (NFData a) => a -> a
+force x = x `deepseq` x
 
 -- | A class of types that can be fully evaluated.
 class NFData a where
