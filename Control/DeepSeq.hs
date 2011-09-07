@@ -54,6 +54,8 @@ import Data.Word
 import Data.Ratio
 import Data.Complex
 import Data.Array
+import Data.Fixed
+import Data.Version
 
 infixr 0 $!!
 
@@ -130,6 +132,8 @@ instance NFData Word16
 instance NFData Word32
 instance NFData Word64
 
+instance NFData (Fixed a)
+
 --Rational and complex numbers.
 
 instance (Integral a, NFData a) => NFData (Ratio a) where
@@ -147,6 +151,9 @@ instance NFData a => NFData (Maybe a) where
 instance (NFData a, NFData b) => NFData (Either a b) where
     rnf (Left x)  = rnf x
     rnf (Right y) = rnf y
+
+instance NFData Data.Version.Version where
+    rnf (Data.Version.Version branch tags) = rnf branch `seq` rnf tags
 
 instance NFData a => NFData [a] where
     rnf [] = ()
