@@ -1,3 +1,6 @@
+#if __GLASGOW_HASKELL__ >= 701
+{-# LANGUAGE Safe #-}
+#endif
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Control.DeepSeq
@@ -50,11 +53,6 @@ import Data.Int
 import Data.Word
 import Data.Ratio
 import Data.Complex
-import Data.Map
-import Data.Set
-import Data.IntMap
-import Data.IntSet
-import Data.Tree
 import Data.Array
 
 infixr 0 $!!
@@ -149,21 +147,6 @@ instance NFData a => NFData (Maybe a) where
 instance (NFData a, NFData b) => NFData (Either a b) where
     rnf (Left x)  = rnf x
     rnf (Right y) = rnf y
-
-instance (NFData k, NFData a) => NFData (Data.Map.Map k a) where
-    rnf = rnf . Data.Map.toList
-
-instance NFData a => NFData (Data.Set.Set a) where
-    rnf = rnf . Data.Set.toList
-
-instance NFData a => NFData (Data.Tree.Tree a) where
-    rnf (Data.Tree.Node r f) = rnf r `seq` rnf f
-
-instance NFData a => NFData (Data.IntMap.IntMap a) where
-    rnf = rnf . Data.IntMap.toList
-
-instance NFData Data.IntSet.IntSet where
-    rnf = rnf . Data.IntSet.toList
 
 instance NFData a => NFData [a] where
     rnf [] = ()
