@@ -134,6 +134,10 @@ instance NFData Word64
 
 instance NFData (Fixed a)
 
+-- |This instance is for convenience and consistency with 'seq'.
+-- This assumes that WHNF is equivalent to NF for functions.
+instance NFData (a -> b)
+
 --Rational and complex numbers.
 
 instance (Integral a, NFData a) => NFData (Ratio a) where
