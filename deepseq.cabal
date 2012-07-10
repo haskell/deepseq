@@ -29,7 +29,7 @@ source-repository head
 library {
   exposed-modules: Control.DeepSeq
   build-depends: base       >= 3   && < 5, 
-                 array      >= 0.1 && < 0.4
+                 array      >= 0.1 && < 0.5
   ghc-options: -Wall
   extensions: CPP
 }
