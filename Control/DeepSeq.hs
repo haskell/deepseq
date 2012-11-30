@@ -1,4 +1,4 @@
-#if __GLASGOW_HASKELL__ >= 703
+#ifdef __GLASGOW_HASKELL__
 {-# LANGUAGE Safe #-}
 #endif
 -----------------------------------------------------------------------------
