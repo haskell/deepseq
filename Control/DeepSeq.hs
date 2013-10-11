@@ -1,4 +1,5 @@
-#ifdef __GLASGOW_HASKELL__
+{-# LANGUAGE CPP #-}
+#if __GLASGOW_HASKELL__ >= 702 && MIN_VERSION_array(0,4,0)
 {-# LANGUAGE Safe #-}
 #endif
 -----------------------------------------------------------------------------
