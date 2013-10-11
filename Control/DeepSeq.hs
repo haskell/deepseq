@@ -44,6 +44,7 @@
 -- thread, before passing to another thread (preventing work moving to
 -- the wrong threads).
 --
+-- /Since: 1.1.0.0/
 module Control.DeepSeq (
      deepseq, ($!!), force,
      NFData(..),
@@ -78,11 +79,14 @@ infixr 0 $!!
 -- evaluation, use 'pseq' from "Control.Parallel" in the
 -- @parallel@ package.
 --
+-- /Since: 1.1.0.0/
 deepseq :: NFData a => a -> b -> b
 deepseq a b = rnf a `seq` b
 
 -- | the deep analogue of '$!'.  In the expression @f $!! x@, @x@ is
 -- fully evaluated before the function @f@ is applied to it.
+--
+-- /Since: 1.2.0.0/
 ($!!) :: (NFData a) => (a -> b) -> a -> b
 f $!! x = x `deepseq` f x
 
@@ -94,11 +98,14 @@ f $!! x = x `deepseq` f x
 -- @force x@ only performs evaluation when the value of @force x@
 -- itself is demanded, so essentially it turns shallow evaluation into
 -- deep evaluation.
-
+--
+-- /Since: 1.2.0.0/
 force :: (NFData a) => a -> a
 force x = x `deepseq` x
 
 -- | A class of types that can be fully evaluated.
+--
+-- /Since: 1.1.0.0/
 class NFData a where
     -- | rnf should reduce its argument to normal form (that is, fully
     -- evaluate all sub-components), and then return '()'.
@@ -132,10 +139,13 @@ instance NFData Word16
 instance NFData Word32
 instance NFData Word64
 
+-- |/Since: 1.3.0.0/
 instance NFData (Fixed a)
 
 -- |This instance is for convenience and consistency with 'seq'.
 -- This assumes that WHNF is equivalent to NF for functions.
+--
+-- /Since: 1.3.0.0/
 instance NFData (a -> b)
 
 --Rational and complex numbers.
@@ -156,6 +166,7 @@ instance (NFData a, NFData b) => NFData (Either a b) where
     rnf (Left x)  = rnf x
     rnf (Right y) = rnf y
 
+-- |/Since: 1.3.0.0/
 instance NFData Data.Version.Version where
     rnf (Data.Version.Version branch tags) = rnf branch `seq` rnf tags
 
