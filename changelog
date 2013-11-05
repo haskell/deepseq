@@ -13,7 +13,7 @@
 1.3.0.0  Feb 2012
         * Add instances for `Fixed`, `a->b` and `Version`
 
-1.3.0.1  Sep 2011
+1.2.0.1  Sep 2011
         * Disable SafeHaskell for GHC 7.2
 
 1.2.0.0  Sep 2011
