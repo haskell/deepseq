@@ -1,6 +1,6 @@
 name:		deepseq
-version:        1.3.0.2
--- GHC 7.6.1 released with 1.3.0.1
+version:        1.3.0.3
+-- NOTE: Don't forget to update ./changelog.md
 license:	BSD3
 license-file:	LICENSE
 maintainer:	libraries@haskell.org
@@ -45,6 +45,6 @@ library
   if impl(ghc >= 7.2)
     other-extensions: Safe
   exposed-modules: Control.DeepSeq
-  build-depends: base       >= 4.3 && < 4.8,
+  build-depends: base       >= 4.3 && < 4.9,
                  array      >= 0.3 && < 0.6
   ghc-options: -Wall
