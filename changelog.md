@@ -1,8 +1,19 @@
 # Changelog for [`deepseq` package](http://hackage.haskell.org/package/deepseq)
 
-## 1.3.0.3  *TBA*
+## 1.4.0.0 *TBA*
 
-        * Bundled with GHC 7.10
+  * Bundled with GHC 7.10.1
+  * Switch to Generics based `DefaultSignature` `rnf` method
+    implementation (based on code from `deepseq-generics`)
+
+    **Compatibility Note**: if you need the exact default-method
+    semantics of `deepseq` prior to 1.4, replace occurences of
+
+        instance NFData XYZ
+
+    by
+
+        instance NFData XYZ where rnf x = seq x ()
 
 ## 1.3.0.2  *Nov 2013*
 
