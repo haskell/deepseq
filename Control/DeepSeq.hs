@@ -1,6 +1,12 @@
+{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE CPP #-}
-#if __GLASGOW_HASKELL__ >= 702 && MIN_VERSION_array(0,4,0)
+#if __GLASGOW_HASKELL__ >= 702
+{-# LANGUAGE DefaultSignatures #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE TypeOperators #-}
+# if MIN_VERSION_array(0,4,0)
 {-# LANGUAGE Safe #-}
+# endif
 #endif
 -----------------------------------------------------------------------------
 -- |
@@ -59,6 +65,37 @@ import Data.Array
 import Data.Fixed
 import Data.Version
 
+#if __GLASGOW_HASKELL__ >= 702
+import GHC.Generics
+
+-- | Hidden internal type-class
+class GNFData f where
+  grnf :: f a -> ()
+
+instance GNFData V1 where
+  grnf = error "Control.DeepSeq.rnf: uninhabited type"
+
+instance GNFData U1 where
+  grnf U1 = ()
+
+instance NFData a => GNFData (K1 i a) where
+  grnf = rnf . unK1
+  {-# INLINEABLE grnf #-}
+
+instance GNFData a => GNFData (M1 i c a) where
+  grnf = grnf . unM1
+  {-# INLINEABLE grnf #-}
+
+instance (GNFData a, GNFData b) => GNFData (a :*: b) where
+  grnf (x :*: y) = grnf x `seq` grnf y
+  {-# INLINEABLE grnf #-}
+
+instance (GNFData a, GNFData b) => GNFData (a :+: b) where
+  grnf (L1 x) = grnf x
+  grnf (R1 x) = grnf x
+  {-# INLINEABLE grnf #-}
+#endif
+
 infixr 0 $!!
 
 -- | 'deepseq': fully evaluates the first argument, before returning the
@@ -108,46 +145,77 @@ force x = x `deepseq` x
 --
 -- /Since: 1.1.0.0/
 class NFData a where
-    -- | rnf should reduce its argument to normal form (that is, fully
+    -- | 'rnf' should reduce its argument to normal form (that is, fully
     -- evaluate all sub-components), and then return '()'.
     --
-    -- The default implementation of 'rnf' is
+    -- Starting with GHC 7.2, you can automatically derive instances
+    -- for types possessing a 'Generic' instance.
     --
-    -- > rnf a = a `seq` ()
+    -- > {-# LANGUAGE DeriveGeneric #-}
+    -- >
+    -- > import GHC.Generics (Generic)
+    -- > import Control.DeepSeq
+    -- >
+    -- > data Foo a = Foo a String
+    -- >              deriving (Eq, Generic)
+    -- >
+    -- > instance NFData a => NFData (Foo a)
+    -- >
+    -- > data Colour = Red | Green | Blue
+    -- >               deriving Generic
+    -- >
+    -- > instance NFData Colour
     --
-    -- which may be convenient when defining instances for data types with
-    -- no unevaluated fields (e.g. enumerations).
+    -- __Compatibility Note__: Prior to version 1.4.0, the default
+    -- implementation of 'rnf' was \"@'rnf' a = 'seq' a ()@\",
+    -- however, starting with @deepseq-1.4.0.0@, the default
+    -- implementation is based on @DefaultSignatures@ allowing for
+    -- more accurate auto-derived 'NFData' instances. If you need the
+    -- previously used exact default 'rnf' method implementation
+    -- semantics, use
+    --
+    -- > instance NFData Colour where rnf x = seq x ()
+    --
+    -- or alternatively
+    --
+    -- > {-# LANGUAGE BangPatterns #-}
+    -- > instance NFData Colour where rnf !_ = ()
+    --
     rnf :: a -> ()
-    rnf a = a `seq` ()
 
-instance NFData Int
-instance NFData Word
-instance NFData Integer
-instance NFData Float
-instance NFData Double
+#if __GLASGOW_HASKELL__ >= 702
+    default rnf :: (Generic a, GNFData (Rep a)) => a -> ()
+    rnf = grnf . from
+#endif
 
-instance NFData Char
-instance NFData Bool
-instance NFData ()
+instance NFData Int      where rnf !_ = ()
+instance NFData Word     where rnf !_ = ()
+instance NFData Integer  where rnf !_ = ()
+instance NFData Float    where rnf !_ = ()
+instance NFData Double   where rnf !_ = ()
 
-instance NFData Int8
-instance NFData Int16
-instance NFData Int32
-instance NFData Int64
+instance NFData Char     where rnf !_ = ()
+instance NFData Bool     where rnf !_ = ()
+instance NFData ()       where rnf !_ = ()
 
-instance NFData Word8
-instance NFData Word16
-instance NFData Word32
-instance NFData Word64
+instance NFData Int8     where rnf !_ = ()
+instance NFData Int16    where rnf !_ = ()
+instance NFData Int32    where rnf !_ = ()
+instance NFData Int64    where rnf !_ = ()
+
+instance NFData Word8    where rnf !_ = ()
+instance NFData Word16   where rnf !_ = ()
+instance NFData Word32   where rnf !_ = ()
+instance NFData Word64   where rnf !_ = ()
 
 -- |/Since: 1.3.0.0/
-instance NFData (Fixed a)
+instance NFData (Fixed a) where rnf !_ = ()
 
 -- |This instance is for convenience and consistency with 'seq'.
 -- This assumes that WHNF is equivalent to NF for functions.
 --
 -- /Since: 1.3.0.0/
-instance NFData (a -> b)
+instance NFData (a -> b) where rnf !_ = ()
 
 --Rational and complex numbers.
 
