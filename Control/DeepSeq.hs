@@ -64,6 +64,7 @@ import Data.Complex
 import Data.Array
 import Data.Fixed
 import Data.Version
+import Data.Monoid
 
 #if MIN_VERSION_base(4,7,0)
 import Data.Proxy ( Proxy(Proxy) )
@@ -268,6 +269,32 @@ instance NFData a => NFData [a] where
 
 instance (Ix a, NFData a, NFData b) => NFData (Array a b) where
     rnf x = rnf (bounds x, Data.Array.elems x)
+
+-- |/Since: 1.4.0.0/
+instance NFData a => NFData (Dual a) where
+    rnf = rnf . getDual
+
+-- |/Since: 1.4.0.0/
+instance NFData a => NFData (First a) where
+    rnf = rnf . getFirst
+
+-- |/Since: 1.4.0.0/
+instance NFData a => NFData (Last a) where
+    rnf = rnf . getLast
+
+-- |/Since: 1.4.0.0/
+instance NFData Any where rnf = rnf . getAny
+
+-- |/Since: 1.4.0.0/
+instance NFData All where rnf = rnf . getAll
+
+-- |/Since: 1.4.0.0/
+instance NFData a => NFData (Sum a) where
+    rnf = rnf . getSum
+
+-- |/Since: 1.4.0.0/
+instance NFData a => NFData (Product a) where
+    rnf = rnf . getProduct
 
 instance (NFData a, NFData b) => NFData (a,b) where
   rnf (x,y) = rnf x `seq` rnf y

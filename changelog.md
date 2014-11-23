@@ -20,6 +20,7 @@
      - `Data.Functor.Identity.Identity`
      - `Data.Proxy.Proxy`
      - `Numeric.Natural.Natural`
+     - `Data.Monoid.{Dual,First,Last,Any,All,Sum,Product}`
 
 ## 1.3.0.2  *Nov 2013*
 
