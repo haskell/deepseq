@@ -64,6 +64,11 @@ import Data.Complex
 import Data.Array
 import Data.Fixed
 import Data.Version
+
+#if MIN_VERSION_base(4,7,0)
+import Data.Proxy ( Proxy(Proxy) )
+#endif
+
 #if MIN_VERSION_base(4,8,0)
 import Numeric.Natural ( Natural )
 #endif
@@ -210,6 +215,11 @@ instance NFData Word8    where rnf !_ = ()
 instance NFData Word16   where rnf !_ = ()
 instance NFData Word32   where rnf !_ = ()
 instance NFData Word64   where rnf !_ = ()
+
+#if MIN_VERSION_base(4,7,0)
+-- |/Since: 1.4.0.0/
+instance NFData (Proxy a) where rnf Proxy = ()
+#endif
 
 #if MIN_VERSION_base(4,8,0)
 -- |/Since: 1.4.0.0/

@@ -17,6 +17,7 @@
 
   * New `NFData` instances for `base` types:
      - `Numeric.Natural.Natural`
+     - `Data.Proxy.Proxy`
 
 ## 1.3.0.2  *Nov 2013*
 
