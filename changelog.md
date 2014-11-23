@@ -15,6 +15,9 @@
 
         instance NFData XYZ where rnf x = seq x ()
 
+  * New `NFData` instances for `base` types:
+     - `Numeric.Natural.Natural`
+
 ## 1.3.0.2  *Nov 2013*
 
   * Bundled with GHC 7.8.1

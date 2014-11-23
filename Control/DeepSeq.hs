@@ -64,6 +64,9 @@ import Data.Complex
 import Data.Array
 import Data.Fixed
 import Data.Version
+#if MIN_VERSION_base(4,8,0)
+import Numeric.Natural ( Natural )
+#endif
 
 #if __GLASGOW_HASKELL__ >= 702
 import GHC.Generics
@@ -207,6 +210,11 @@ instance NFData Word8    where rnf !_ = ()
 instance NFData Word16   where rnf !_ = ()
 instance NFData Word32   where rnf !_ = ()
 instance NFData Word64   where rnf !_ = ()
+
+#if MIN_VERSION_base(4,8,0)
+-- |/Since: 1.4.0.0/
+instance NFData Natural  where rnf !_ = ()
+#endif
 
 -- |/Since: 1.3.0.0/
 instance NFData (Fixed a) where rnf !_ = ()
