@@ -57,6 +57,7 @@ module Control.DeepSeq (
      NFData(..),
   ) where
 
+import Control.Applicative
 import Data.Int
 import Data.Word
 import Data.Ratio
@@ -266,6 +267,14 @@ instance NFData Data.Version.Version where
 instance NFData a => NFData [a] where
     rnf [] = ()
     rnf (x:xs) = rnf x `seq` rnf xs
+
+-- |/Since: 1.4.0.0/
+instance NFData a => NFData (ZipList a) where
+    rnf = rnf . getZipList
+
+-- |/Since: 1.4.0.0/
+instance NFData a => NFData (Const a b) where
+    rnf = rnf . getConst
 
 instance (Ix a, NFData a, NFData b) => NFData (Array a b) where
     rnf x = rnf (bounds x, Data.Array.elems x)

@@ -16,11 +16,13 @@
         instance NFData XYZ where rnf x = seq x ()
 
   * New `NFData` instances for `base` types:
-  
+
+     - `Control.Applicative.Const`
+     - `Control.Applicative.ZipList`
      - `Data.Functor.Identity.Identity`
+     - `Data.Monoid.{Dual,First,Last,Any,All,Sum,Product}`
      - `Data.Proxy.Proxy`
      - `Numeric.Natural.Natural`
-     - `Data.Monoid.{Dual,First,Last,Any,All,Sum,Product}`
 
 ## 1.3.0.2  *Nov 2013*
 
