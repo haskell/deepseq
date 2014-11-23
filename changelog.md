@@ -16,8 +16,10 @@
         instance NFData XYZ where rnf x = seq x ()
 
   * New `NFData` instances for `base` types:
-     - `Numeric.Natural.Natural`
+  
+     - `Data.Functor.Identity.Identity`
      - `Data.Proxy.Proxy`
+     - `Numeric.Natural.Natural`
 
 ## 1.3.0.2  *Nov 2013*
 

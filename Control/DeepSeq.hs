@@ -70,6 +70,7 @@ import Data.Proxy ( Proxy(Proxy) )
 #endif
 
 #if MIN_VERSION_base(4,8,0)
+import Data.Functor.Identity ( Identity(..) )
 import Numeric.Natural ( Natural )
 #endif
 
@@ -222,6 +223,10 @@ instance NFData (Proxy a) where rnf Proxy = ()
 #endif
 
 #if MIN_VERSION_base(4,8,0)
+-- |/Since: 1.4.0.0/
+instance NFData a => NFData (Identity a) where
+    rnf = rnf . runIdentity
+
 -- |/Since: 1.4.0.0/
 instance NFData Natural  where rnf !_ = ()
 #endif
