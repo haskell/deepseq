@@ -159,6 +159,8 @@ class NFData a where
     -- | 'rnf' should reduce its argument to normal form (that is, fully
     -- evaluate all sub-components), and then return '()'.
     --
+    -- === 'Generic' 'NFData' deriving
+    --
     -- Starting with GHC 7.2, you can automatically derive instances
     -- for types possessing a 'Generic' instance.
     --
@@ -177,9 +179,29 @@ class NFData a where
     -- >
     -- > instance NFData Colour
     --
-    -- __Compatibility Note__: Prior to version 1.4.0, the default
-    -- implementation of 'rnf' was \"@'rnf' a = 'seq' a ()@\",
-    -- however, starting with @deepseq-1.4.0.0@, the default
+    -- Starting with GHC 7.10, the example above can be written more
+    -- concisely by enabling the new @DeriveAnyClass@ extension:
+    --
+    -- > {-# LANGUAGE DeriveGeneric, DeriveAnyClass #-}
+    -- >
+    -- > import GHC.Generics (Generic)
+    -- > import Control.DeepSeq
+    -- >
+    -- > data Foo a = Foo a String
+    -- >              deriving (Eq, Generic, NFData)
+    -- >
+    -- > data Colour = Red | Green | Blue
+    -- >               deriving (Generic, NFData)
+    -- >
+    --
+    -- === Compatibility with previous @deepseq@ versions
+    --
+    -- Prior to version 1.4.0, the default implementation of the 'rnf'
+    -- method was defined as
+    --
+    -- @'rnf' a = 'seq' a ()@
+    --
+    -- However, starting with @deepseq-1.4.0.0@, the default
     -- implementation is based on @DefaultSignatures@ allowing for
     -- more accurate auto-derived 'NFData' instances. If you need the
     -- previously used exact default 'rnf' method implementation
