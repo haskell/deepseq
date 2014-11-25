@@ -73,6 +73,8 @@ import Data.Proxy ( Proxy(Proxy) )
 
 #if MIN_VERSION_base(4,8,0)
 import Data.Functor.Identity ( Identity(..) )
+-- NB: Data.Typeable.Internal is "Trustworthy" only starting w/ base-4.8
+import Data.Typeable.Internal ( TypeRep(..), TyCon(..) )
 import Numeric.Natural ( Natural )
 #endif
 
@@ -327,6 +329,20 @@ instance NFData a => NFData (Sum a) where
 -- |/Since: 1.4.0.0/
 instance NFData a => NFData (Product a) where
     rnf = rnf . getProduct
+
+#if MIN_VERSION_base(4,8,0)
+-- | __NOTE__: Only defined for @base-4.8.0.0@ and later
+--
+-- /Since: 1.4.0.0/
+instance NFData TypeRep where
+    rnf (TypeRep _ tycon tyrep) = rnf tycon `seq` rnf tyrep
+
+-- | __NOTE__: Only defined for @base-4.8.0.0@ and later
+--
+-- /Since: 1.4.0.0/
+instance NFData TyCon where
+    rnf (TyCon _ tcp tcm tcn) = rnf tcp `seq` rnf tcm `seq` rnf tcn
+#endif
 
 ----------------------------------------------------------------------------
 -- GHC Specifics

@@ -22,6 +22,9 @@
      - `Data.Functor.Identity.Identity`
      - `Data.Monoid.{Dual,First,Last,Any,All,Sum,Product}`
      - `Data.Proxy.Proxy`
+     - `Data.Typeable.Internal.TyCon`
+     - `Data.Typeable.Internal.TypeRep`
+     - `GHC.Fingerprint.Type.Fingerprint`
      - `Numeric.Natural.Natural`
 
 ## 1.3.0.2  *Nov 2013*
