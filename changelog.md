@@ -27,6 +27,7 @@
      - `GHC.Fingerprint.Type.Fingerprint`
      - `Numeric.Natural.Natural`
      - `System.Mem.StableName.StableName`
+     - `Foreign.C.Types.C*`
 
 ## 1.3.0.2  *Nov 2013*
 

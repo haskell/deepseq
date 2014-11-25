@@ -66,7 +66,7 @@ import Data.Array
 import Data.Fixed
 import Data.Version
 import Data.Monoid
-
+import Foreign.C.Types
 import System.Mem.StableName ( StableName )
 
 #if MIN_VERSION_base(4,7,0)
@@ -358,6 +358,99 @@ instance NFData TyCon where
 instance NFData Fingerprint where
     rnf (Fingerprint _ _) = ()
 #endif
+
+----------------------------------------------------------------------------
+-- Foreign.C.Types
+
+-- |/Since: 1.4.0.0/
+instance NFData CChar where rnf !_ = ()
+
+-- |/Since: 1.4.0.0/
+instance NFData CSChar where rnf !_ = ()
+
+-- |/Since: 1.4.0.0/
+instance NFData CUChar where rnf !_ = ()
+
+-- |/Since: 1.4.0.0/
+instance NFData CShort where rnf !_ = ()
+
+-- |/Since: 1.4.0.0/
+instance NFData CUShort where rnf !_ = ()
+
+-- |/Since: 1.4.0.0/
+instance NFData CInt where rnf !_ = ()
+
+-- |/Since: 1.4.0.0/
+instance NFData CUInt where rnf !_ = ()
+
+-- |/Since: 1.4.0.0/
+instance NFData CLong where rnf !_ = ()
+
+-- |/Since: 1.4.0.0/
+instance NFData CULong where rnf !_ = ()
+
+-- |/Since: 1.4.0.0/
+instance NFData CPtrdiff where rnf !_ = ()
+
+-- |/Since: 1.4.0.0/
+instance NFData CSize where rnf !_ = ()
+
+-- |/Since: 1.4.0.0/
+instance NFData CWchar where rnf !_ = ()
+
+-- |/Since: 1.4.0.0/
+instance NFData CSigAtomic where rnf !_ = ()
+
+-- |/Since: 1.4.0.0/
+instance NFData CLLong where rnf !_ = ()
+
+-- |/Since: 1.4.0.0/
+instance NFData CULLong where rnf !_ = ()
+
+-- |/Since: 1.4.0.0/
+instance NFData CIntPtr where rnf !_ = ()
+
+-- |/Since: 1.4.0.0/
+instance NFData CUIntPtr where rnf !_ = ()
+
+-- |/Since: 1.4.0.0/
+instance NFData CIntMax where rnf !_ = ()
+
+-- |/Since: 1.4.0.0/
+instance NFData CUIntMax where rnf !_ = ()
+
+-- |/Since: 1.4.0.0/
+instance NFData CClock where rnf !_ = ()
+
+-- |/Since: 1.4.0.0/
+instance NFData CTime where rnf !_ = ()
+
+#if MIN_VERSION_base(4,4,0)
+-- |/Since: 1.4.0.0/
+instance NFData CUSeconds where rnf !_ = ()
+
+-- |/Since: 1.4.0.0/
+instance NFData CSUSeconds where rnf !_ = ()
+#endif
+
+-- |/Since: 1.4.0.0/
+instance NFData CFloat where rnf !_ = ()
+
+-- |/Since: 1.4.0.0/
+instance NFData CDouble where rnf !_ = ()
+
+-- NOTE: The types `CFile`, `CFPos`, and `CJmpBuf` below are not
+-- newtype wrappers rather defined as field-less single-constructor
+-- types.
+
+-- |/Since: 1.4.0.0/
+instance NFData CFile where rnf !_ = ()
+
+-- |/Since: 1.4.0.0/
+instance NFData CFpos where rnf !_ = ()
+
+-- |/Since: 1.4.0.0/
+instance NFData CJmpBuf where rnf !_ = ()
 
 ----------------------------------------------------------------------------
 -- Tuples
