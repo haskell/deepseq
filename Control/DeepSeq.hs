@@ -77,6 +77,7 @@ import Numeric.Natural ( Natural )
 #endif
 
 #if __GLASGOW_HASKELL__ >= 702
+import GHC.Fingerprint.Type ( Fingerprint(..) )
 import GHC.Generics
 
 -- | Hidden internal type-class
@@ -326,6 +327,18 @@ instance NFData a => NFData (Sum a) where
 -- |/Since: 1.4.0.0/
 instance NFData a => NFData (Product a) where
     rnf = rnf . getProduct
+
+----------------------------------------------------------------------------
+-- GHC Specifics
+
+#if __GLASGOW_HASKELL__ >= 702
+-- |/Since: 1.4.0.0/
+instance NFData Fingerprint where
+    rnf (Fingerprint _ _) = ()
+#endif
+
+----------------------------------------------------------------------------
+-- Tuples
 
 instance (NFData a, NFData b) => NFData (a,b) where
   rnf (x,y) = rnf x `seq` rnf y
