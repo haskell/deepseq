@@ -67,6 +67,8 @@ import Data.Fixed
 import Data.Version
 import Data.Monoid
 
+import System.Mem.StableName ( StableName )
+
 #if MIN_VERSION_base(4,7,0)
 import Data.Proxy ( Proxy(Proxy) )
 #endif
@@ -329,6 +331,10 @@ instance NFData a => NFData (Sum a) where
 -- |/Since: 1.4.0.0/
 instance NFData a => NFData (Product a) where
     rnf = rnf . getProduct
+
+-- |/Since: 1.4.0.0/
+instance NFData (StableName a) where
+    rnf !_ = ()
 
 #if MIN_VERSION_base(4,8,0)
 -- | __NOTE__: Only defined for @base-4.8.0.0@ and later

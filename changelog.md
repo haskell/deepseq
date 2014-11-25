@@ -26,6 +26,7 @@
      - `Data.Typeable.Internal.TypeRep`
      - `GHC.Fingerprint.Type.Fingerprint`
      - `Numeric.Natural.Natural`
+     - `System.Mem.StableName.StableName`
 
 ## 1.3.0.2  *Nov 2013*
 
