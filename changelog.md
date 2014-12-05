@@ -19,11 +19,13 @@
 
      - `Control.Applicative.Const`
      - `Control.Applicative.ZipList`
+     - `Control.Concurrent.ThreadId`
      - `Data.Functor.Identity.Identity`
      - `Data.Monoid.{Dual,First,Last,Any,All,Sum,Product}`
      - `Data.Proxy.Proxy`
      - `Data.Typeable.Internal.TyCon`
      - `Data.Typeable.Internal.TypeRep`
+     - `Data.Unique.Unique`
      - `GHC.Fingerprint.Type.Fingerprint`
      - `Numeric.Natural.Natural`
      - `System.Mem.StableName.StableName`
