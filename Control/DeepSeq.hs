@@ -71,6 +71,10 @@ import Data.Unique ( Unique )
 import Foreign.C.Types
 import System.Mem.StableName ( StableName )
 
+#if MIN_VERSION_base(4,6,0)
+import Data.Ord ( Down(Down) )
+#endif
+
 #if MIN_VERSION_base(4,7,0)
 import Data.Proxy ( Proxy(Proxy) )
 #endif
@@ -307,6 +311,12 @@ instance NFData a => NFData (Const a b) where
 
 instance (Ix a, NFData a, NFData b) => NFData (Array a b) where
     rnf x = rnf (bounds x, Data.Array.elems x)
+
+#if MIN_VERSION_base(4,6,0)
+-- |/Since: 1.4.0.0/
+instance NFData a => NFData (Down a) where
+    rnf (Down x) = rnf x
+#endif
 
 -- |/Since: 1.4.0.0/
 instance NFData a => NFData (Dual a) where

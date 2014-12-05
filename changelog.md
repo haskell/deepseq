@@ -22,6 +22,7 @@
      - `Control.Concurrent.ThreadId`
      - `Data.Functor.Identity.Identity`
      - `Data.Monoid.{Dual,First,Last,Any,All,Sum,Product}`
+     - `Data.Ord.Down`
      - `Data.Proxy.Proxy`
      - `Data.Typeable.Internal.TyCon`
      - `Data.Typeable.Internal.TypeRep`
