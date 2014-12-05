@@ -58,6 +58,7 @@ module Control.DeepSeq (
   ) where
 
 import Control.Applicative
+import Control.Concurrent ( ThreadId )
 import Data.Int
 import Data.Word
 import Data.Ratio
@@ -66,6 +67,7 @@ import Data.Array
 import Data.Fixed
 import Data.Version
 import Data.Monoid
+import Data.Unique ( Unique )
 import Foreign.C.Types
 import System.Mem.StableName ( StableName )
 
@@ -334,7 +336,15 @@ instance NFData a => NFData (Product a) where
 
 -- |/Since: 1.4.0.0/
 instance NFData (StableName a) where
-    rnf !_ = ()
+    rnf !_ = () -- assumes `data StableName a = StableName (StableName# a)`
+
+-- |/Since: 1.4.0.0/
+instance NFData ThreadId where
+    rnf !_ = () -- assumes `data ThreadId = ThreadId ThreadId#`
+
+-- |/Since: 1.4.0.0/
+instance NFData Unique where
+    rnf !_ = () -- assumes `newtype Unique = Unique Integer`
 
 #if MIN_VERSION_base(4,8,0)
 -- | __NOTE__: Only defined for @base-4.8.0.0@ and later
