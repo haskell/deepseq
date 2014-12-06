@@ -56,3 +56,32 @@ library
   ghc-options: -Wall
 
   exposed-modules: Control.DeepSeq
+
+
+test-suite deepseq-generics-tests
+    default-language:    Haskell2010
+    if !impl(ghc>=7.2)
+        buildable: False
+    type:                exitcode-stdio-1.0
+    hs-source-dirs:      . tests
+    main-is:             Main.hs
+    other-extensions:
+        CPP
+        BangPatterns
+        DefaultSignatures
+        DeriveDataTypeable
+        DeriveGeneric
+        FlexibleContexts
+        Safe
+        TupleSections
+        TypeOperators
+
+    ghc-options:         -Wall
+
+    build-depends:
+        array,
+        base,
+        -- end of packages with inherited version constraints
+        test-framework == 0.8.*,
+        test-framework-hunit == 0.3.*,
+        HUnit == 1.2.*
