@@ -27,6 +27,7 @@
      - `Data.Typeable.Internal.TyCon`
      - `Data.Typeable.Internal.TypeRep`
      - `Data.Unique.Unique`
+     - `Data.Void.Void`
      - `GHC.Fingerprint.Type.Fingerprint`
      - `Numeric.Natural.Natural`
      - `System.Mem.StableName.StableName`

@@ -83,6 +83,7 @@ import Data.Proxy ( Proxy(Proxy) )
 import Data.Functor.Identity ( Identity(..) )
 -- NB: Data.Typeable.Internal is "Trustworthy" only starting w/ base-4.8
 import Data.Typeable.Internal ( TypeRep(..), TyCon(..) )
+import Data.Void ( Void, absurd )
 import Numeric.Natural ( Natural )
 #endif
 
@@ -261,6 +262,12 @@ instance NFData (Proxy a) where rnf Proxy = ()
 -- |/Since: 1.4.0.0/
 instance NFData a => NFData (Identity a) where
     rnf = rnf . runIdentity
+
+-- | Defined as @'rnf' = 'absurd'@.
+--
+-- /Since: 1.4.0.0/
+instance NFData Void where
+    rnf = absurd
 
 -- |/Since: 1.4.0.0/
 instance NFData Natural  where rnf !_ = ()
