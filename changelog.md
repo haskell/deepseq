@@ -1,6 +1,6 @@
 # Changelog for [`deepseq` package](http://hackage.haskell.org/package/deepseq)
 
-## 1.4.0.0 *TBA*
+## 1.4.0.0  *Dec 2014*
 
   * Bundled with GHC 7.10.1
   * Switch to Generics based `DefaultSignature` `rnf` method
