@@ -208,7 +208,7 @@ class NFData a where
     --
     -- === Compatibility with previous @deepseq@ versions
     --
-    -- Prior to version 1.4.0, the default implementation of the 'rnf'
+    -- Prior to version 1.4.0.0, the default implementation of the 'rnf'
     -- method was defined as
     --
     -- @'rnf' a = 'seq' a ()@
