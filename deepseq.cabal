@@ -1,11 +1,11 @@
-name:		deepseq
+name:           deepseq
 version:        1.4.0.0
 -- NOTE: Don't forget to update ./changelog.md
-license:	BSD3
-license-file:	LICENSE
-maintainer:	libraries@haskell.org
+license:        BSD3
+license-file:   LICENSE
+maintainer:     libraries@haskell.org
 bug-reports:    https://github.com/haskell/deepseq/issues
-synopsis:	Deep evaluation of data structures
+synopsis:       Deep evaluation of data structures
 category:       Control
 description:
     This package provides methods for fully evaluating data structures
@@ -20,11 +20,6 @@ description:
     typeclass (\"Normal Form Data\", data structures with no unevaluated
     components) which defines strategies for fully evaluating different
     data types.
-    .
-    If you want to automatically derive 'NFData' instances via the
-    "GHC.Generics" facility, there is a companion package
-    <http://hackage.haskell.org/package/deepseq-generics deepseq-generics>
-    which builds on top of this package.
 build-type:     Simple
 cabal-version:  >=1.10
 tested-with:    GHC==7.8.3, GHC==7.8.2, GHC==7.8.1, GHC==7.6.3, GHC==7.6.2, GHC==7.6.1, GHC==7.4.2, GHC==7.4.1, GHC==7.2.2, GHC==7.2.1, GHC==7.0.4, GHC==7.0.3, GHC==7.0.2, GHC==7.0.1
