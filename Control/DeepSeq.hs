@@ -284,10 +284,10 @@ instance NFData (a -> b) where rnf !_ = ()
 
 --Rational and complex numbers.
 
-instance (Integral a, NFData a) => NFData (Ratio a) where
+instance NFData a => NFData (Ratio a) where
   rnf x = rnf (numerator x, denominator x)
 
-instance (RealFloat a, NFData a) => NFData (Complex a) where
+instance (NFData a) => NFData (Complex a) where
   rnf (x:+y) = rnf x `seq`
                rnf y `seq`
                ()
@@ -316,7 +316,7 @@ instance NFData a => NFData (ZipList a) where
 instance NFData a => NFData (Const a b) where
     rnf = rnf . getConst
 
-instance (Ix a, NFData a, NFData b) => NFData (Array a b) where
+instance (NFData a, NFData b) => NFData (Array a b) where
     rnf x = rnf (bounds x, Data.Array.elems x)
 
 #if MIN_VERSION_base(4,6,0)
