@@ -284,7 +284,11 @@ instance NFData (a -> b) where rnf !_ = ()
 
 --Rational and complex numbers.
 
+#if __GLASGOW_HASKELL__ >= 711
 instance NFData a => NFData (Ratio a) where
+#else
+instance (Integral a, NFData a) => NFData (Ratio a) where
+#endif
   rnf x = rnf (numerator x, denominator x)
 
 instance (NFData a) => NFData (Complex a) where
@@ -316,7 +320,11 @@ instance NFData a => NFData (ZipList a) where
 instance NFData a => NFData (Const a b) where
     rnf = rnf . getConst
 
+#if __GLASGOW_HASKELL__ >= 711
 instance (NFData a, NFData b) => NFData (Array a b) where
+#else
+instance (Ix a, NFData a, NFData b) => NFData (Array a b) where
+#endif
     rnf x = rnf (bounds x, Data.Array.elems x)
 
 #if MIN_VERSION_base(4,6,0)
