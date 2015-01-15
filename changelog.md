@@ -1,5 +1,10 @@
 # Changelog for [`deepseq` package](http://hackage.haskell.org/package/deepseq)
 
+## 1.4.1.0  *TBA*
+
+  * Drop redundant constraints from a few `NFData` instances (if
+    possible for a given `base` version)
+
 ## 1.4.0.0  *Dec 2014*
 
   * Bundled with GHC 7.10.1
