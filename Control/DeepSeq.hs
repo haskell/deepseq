@@ -291,7 +291,11 @@ instance (Integral a, NFData a) => NFData (Ratio a) where
 #endif
   rnf x = rnf (numerator x, denominator x)
 
+#if MIN_VERSION_base(4,4,0)
 instance (NFData a) => NFData (Complex a) where
+#else
+instance (RealFloat a, NFData a) => NFData (Complex a) where
+#endif
   rnf (x:+y) = rnf x `seq`
                rnf y `seq`
                ()
