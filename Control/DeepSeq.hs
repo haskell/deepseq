@@ -380,7 +380,7 @@ instance NFData Unique where
 --
 -- /Since: 1.4.0.0/
 instance NFData TypeRep where
-    rnf (TypeRep _ tycon tyrep) = rnf tycon `seq` rnf tyrep
+    rnf (TypeRep _ tycon kis tyrep) = rnf tycon `seq` rnf kis `seq` rnf tyrep
 
 -- | __NOTE__: Only defined for @base-4.8.0.0@ and later
 --
