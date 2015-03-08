@@ -159,6 +159,26 @@ f $!! x = x `deepseq` f x
 -- itself is demanded, so essentially it turns shallow evaluation into
 -- deep evaluation.
 --
+-- 'force' can be conveniently used in combination with @ViewPatterns@:
+--
+-- > {-# LANGUAGE BangPatterns, ViewPatterns #-}
+-- > import Control.DeepSeq
+-- >
+-- > someFun :: ComplexData -> SomeResult
+-- > someFun (force -> !arg) = {- 'arg' will be fully evaluated -}
+--
+-- Another useful application is to combine 'force' with
+-- 'Control.Exception.evaluate' in order to force deep evaluation
+-- relative to other 'IO' operations:
+--
+-- > import Control.Exception (evaluate)
+-- > import Control.DeepSeq
+-- >
+-- > main = do
+-- >   result <- evaluate $ force $ pureComputation
+-- >   {- 'result' will be fully evaluated at this point -}
+-- >   return ()
+--
 -- /Since: 1.2.0.0/
 force :: (NFData a) => a -> a
 force x = x `deepseq` x
