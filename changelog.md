@@ -1,13 +1,13 @@
 # Changelog for [`deepseq` package](http://hackage.haskell.org/package/deepseq)
 
-## 1.4.1.0  *TBA*
+## 1.4.1.0  *Mar 2015*
 
+  * Bundled with GHC 7.10.1
   * Drop redundant constraints from a few `NFData` instances (if
     possible for a given `base` version)
 
 ## 1.4.0.0  *Dec 2014*
 
-  * Bundled with GHC 7.10.1
   * Switch to Generics based `DefaultSignature` `rnf` method
     implementation (based on code from `deepseq-generics`)
 
