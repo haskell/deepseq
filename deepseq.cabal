@@ -1,5 +1,5 @@
 name:           deepseq
-version:        1.4.1.0
+version:        1.4.1.1
 -- NOTE: Don't forget to update ./changelog.md
 license:        BSD3
 license-file:   LICENSE
@@ -43,8 +43,6 @@ library
       FlexibleContexts
       Safe
       TypeOperators
-
-    build-depends: ghc-prim >= 0.2 && < 0.4
 
   build-depends: base       >= 4.3 && < 4.9,
                  array      >= 0.3 && < 0.6

@@ -1,8 +1,12 @@
 # Changelog for [`deepseq` package](http://hackage.haskell.org/package/deepseq)
 
-## 1.4.1.0  *Mar 2015*
+## 1.4.1.1  *Mar 2015*
 
   * Bundled with GHC 7.10.1
+  * Drop redundant `ghc-prim` dependency
+
+## 1.4.1.0  *Mar 2015*
+
   * Drop redundant constraints from a few `NFData` instances (if
     possible for a given `base` version)
 
