@@ -44,6 +44,10 @@ library
       Safe
       TypeOperators
 
+    -- GHC.Generics lived in `ghc-prim` for GHC 7.2
+    if impl(ghc < 7.4)
+      build-depends: ghc-prim == 0.2.*
+
   build-depends: base       >= 4.3 && < 4.9,
                  array      >= 0.3 && < 0.6
   ghc-options: -Wall
