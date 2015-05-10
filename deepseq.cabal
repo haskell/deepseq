@@ -48,6 +48,9 @@ library
     if impl(ghc < 7.6)
       build-depends: ghc-prim == 0.2.*
 
+  if impl(ghc < 7.4)
+    build-depends: array < 0.4
+
   build-depends: base       >= 4.3 && < 4.9,
                  array      >= 0.3 && < 0.6
   ghc-options: -Wall
