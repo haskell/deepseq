@@ -1,5 +1,10 @@
 # Changelog for [`deepseq` package](http://hackage.haskell.org/package/deepseq)
 
+## 1.4.1.2  *Aug 2015*
+
+  * Avoid the broken combination of GHC-7.2 with `array>=0.4`
+    ([#7](https://github.com/haskell/deepseq/pull/7))
+
 ## 1.4.1.1  *Mar 2015*
 
   * Bundled with GHC 7.10.1
