@@ -8,6 +8,9 @@
 {-# LANGUAGE Safe #-}
 # endif
 #endif
+#if __GLASGOW_HASKELL__ >= 706
+{-# LANGUAGE PolyKinds #-}
+#endif
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Control.DeepSeq
