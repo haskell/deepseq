@@ -71,6 +71,7 @@ import Data.Fixed
 import Data.Version
 import Data.Monoid
 import Data.Unique ( Unique )
+import Foreign.Ptr
 import Foreign.C.Types
 import System.Mem.StableName ( StableName )
 
@@ -419,6 +420,15 @@ instance NFData TyCon where
 instance NFData Fingerprint where
     rnf (Fingerprint _ _) = ()
 #endif
+
+----------------------------------------------------------------------------
+-- Foreign.Ptr
+
+-- |/Since: 1.4.3.0/
+instance NFData (Ptr a) where rnf !_ = ()
+
+-- |/Since: 1.4.3.0/
+instance NFData (FunPtr a) where rnf !_ = ()
 
 ----------------------------------------------------------------------------
 -- Foreign.C.Types
