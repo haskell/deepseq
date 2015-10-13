@@ -5,8 +5,11 @@
   * Added instances for `Ptr` and `FunPtr`
     ([#10](https://github.com/haskell/deepseq/pull/10))
 
-  * Added instance for `IORef` and `MVar`
+  * Added instances for `IORef` and `MVar`
     ([#6](https://github.com/haskell/deepseq/issues/6))
+
+  * Added instance for `ExitCode`
+    ([#4](https://github.com/haskell/deepseq/issues/4))
 
 ## 1.4.1.2  *Aug 2015*
 

@@ -74,6 +74,7 @@ import Data.Monoid
 import Data.Unique ( Unique )
 import Foreign.Ptr
 import Foreign.C.Types
+import System.Exit ( ExitCode(..) )
 import System.Mem.StableName ( StableName )
 
 #if MIN_VERSION_base(4,6,0)
@@ -535,6 +536,14 @@ instance NFData CFpos where rnf !_ = ()
 
 -- |/Since: 1.4.0.0/
 instance NFData CJmpBuf where rnf !_ = ()
+
+----------------------------------------------------------------------------
+-- System.Exit
+
+-- |/Since: 1.4.2.0/
+instance NFData ExitCode where
+  rnf (ExitFailure n) = rnf n
+  rnf ExitSuccess     = ()
 
 ----------------------------------------------------------------------------
 -- Tuples
