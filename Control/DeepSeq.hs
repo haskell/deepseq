@@ -424,10 +424,10 @@ instance NFData Fingerprint where
 ----------------------------------------------------------------------------
 -- Foreign.Ptr
 
--- |/Since: 1.4.3.0/
+-- |/Since: 1.4.2.0/
 instance NFData (Ptr a) where rnf !_ = ()
 
--- |/Since: 1.4.3.0/
+-- |/Since: 1.4.2.0/
 instance NFData (FunPtr a) where rnf !_ = ()
 
 ----------------------------------------------------------------------------

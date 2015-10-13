@@ -1,5 +1,10 @@
 # Changelog for [`deepseq` package](http://hackage.haskell.org/package/deepseq)
 
+## 1.4.2.0  *Oct 2015*
+
+  * Added instances for `Ptr` and `FunPtr`
+    ([#10](https://github.com/haskell/deepseq/pull/10))
+
 ## 1.4.1.2  *Aug 2015*
 
   * Avoid the broken combination of GHC-7.2 with `array>=0.4`
