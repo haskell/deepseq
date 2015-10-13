@@ -61,7 +61,8 @@ module Control.DeepSeq (
   ) where
 
 import Control.Applicative
-import Control.Concurrent ( ThreadId )
+import Control.Concurrent ( ThreadId, MVar )
+import Data.IORef
 import Data.Int
 import Data.Word
 import Data.Ratio
@@ -411,6 +412,18 @@ instance NFData TypeRep where
 instance NFData TyCon where
     rnf tycon = rnfTyCon tycon
 #endif
+
+-- | __NOTE__: Only strict in the reference and not the referenced value.
+--
+-- /Since: 1.4.2.0/
+instance NFData (IORef a) where
+  rnf !_ = ()
+
+-- | __NOTE__: Only strict in the reference and not the referenced value.
+--
+-- /Since: 1.4.2.0/
+instance NFData (MVar a) where
+  rnf !_ = ()
 
 ----------------------------------------------------------------------------
 -- GHC Specifics
