@@ -63,6 +63,7 @@ module Control.DeepSeq (
 import Control.Applicative
 import Control.Concurrent ( ThreadId, MVar )
 import Data.IORef
+import Data.STRef
 import Data.Int
 import Data.Word
 import Data.Ratio
@@ -418,6 +419,12 @@ instance NFData TyCon where
 --
 -- /Since: 1.4.2.0/
 instance NFData (IORef a) where
+  rnf !_ = ()
+
+-- | __NOTE__: Only strict in the reference and not the referenced value.
+--
+-- /Since: 1.4.2.0/
+instance NFData (STRef s a) where
   rnf !_ = ()
 
 -- | __NOTE__: Only strict in the reference and not the referenced value.
