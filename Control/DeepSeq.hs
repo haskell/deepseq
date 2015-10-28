@@ -54,7 +54,7 @@
 -- thread, before passing to another thread (preventing work moving to
 -- the wrong threads).
 --
--- /Since: 1.1.0.0/
+-- @since 1.1.0.0
 module Control.DeepSeq (
      deepseq, ($!!), force,
      NFData(..),
@@ -146,14 +146,14 @@ infixr 0 $!!
 -- evaluation, use 'pseq' from "Control.Parallel" in the
 -- @parallel@ package.
 --
--- /Since: 1.1.0.0/
+-- @since 1.1.0.0
 deepseq :: NFData a => a -> b -> b
 deepseq a b = rnf a `seq` b
 
 -- | the deep analogue of '$!'.  In the expression @f $!! x@, @x@ is
 -- fully evaluated before the function @f@ is applied to it.
 --
--- /Since: 1.2.0.0/
+-- @since 1.2.0.0
 ($!!) :: (NFData a) => (a -> b) -> a -> b
 f $!! x = x `deepseq` f x
 
@@ -186,13 +186,13 @@ f $!! x = x `deepseq` f x
 -- >   {- 'result' will be fully evaluated at this point -}
 -- >   return ()
 --
--- /Since: 1.2.0.0/
+-- @since 1.2.0.0
 force :: (NFData a) => a -> a
 force x = x `deepseq` x
 
 -- | A class of types that can be fully evaluated.
 --
--- /Since: 1.1.0.0/
+-- @since 1.1.0.0
 class NFData a where
     -- | 'rnf' should reduce its argument to normal form (that is, fully
     -- evaluate all sub-components), and then return '()'.
@@ -280,32 +280,32 @@ instance NFData Word32   where rnf !_ = ()
 instance NFData Word64   where rnf !_ = ()
 
 #if MIN_VERSION_base(4,7,0)
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData (Proxy a) where rnf Proxy = ()
 #endif
 
 #if MIN_VERSION_base(4,8,0)
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData a => NFData (Identity a) where
     rnf = rnf . runIdentity
 
 -- | Defined as @'rnf' = 'absurd'@.
 --
--- /Since: 1.4.0.0/
+-- @since 1.4.0.0
 instance NFData Void where
     rnf = absurd
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData Natural  where rnf !_ = ()
 #endif
 
--- |/Since: 1.3.0.0/
+-- |@since 1.3.0.0
 instance NFData (Fixed a) where rnf !_ = ()
 
 -- |This instance is for convenience and consistency with 'seq'.
 -- This assumes that WHNF is equivalent to NF for functions.
 --
--- /Since: 1.3.0.0/
+-- @since 1.3.0.0
 instance NFData (a -> b) where rnf !_ = ()
 
 --Rational and complex numbers.
@@ -334,7 +334,7 @@ instance (NFData a, NFData b) => NFData (Either a b) where
     rnf (Left x)  = rnf x
     rnf (Right y) = rnf y
 
--- |/Since: 1.3.0.0/
+-- |@since 1.3.0.0
 instance NFData Data.Version.Version where
     rnf (Data.Version.Version branch tags) = rnf branch `seq` rnf tags
 
@@ -342,11 +342,11 @@ instance NFData a => NFData [a] where
     rnf [] = ()
     rnf (x:xs) = rnf x `seq` rnf xs
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData a => NFData (ZipList a) where
     rnf = rnf . getZipList
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData a => NFData (Const a b) where
     rnf = rnf . getConst
 
@@ -358,78 +358,78 @@ instance (Ix a, NFData a, NFData b) => NFData (Array a b) where
     rnf x = rnf (bounds x, Data.Array.elems x)
 
 #if MIN_VERSION_base(4,6,0)
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData a => NFData (Down a) where
     rnf (Down x) = rnf x
 #endif
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData a => NFData (Dual a) where
     rnf = rnf . getDual
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData a => NFData (First a) where
     rnf = rnf . getFirst
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData a => NFData (Last a) where
     rnf = rnf . getLast
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData Any where rnf = rnf . getAny
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData All where rnf = rnf . getAll
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData a => NFData (Sum a) where
     rnf = rnf . getSum
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData a => NFData (Product a) where
     rnf = rnf . getProduct
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData (StableName a) where
     rnf !_ = () -- assumes `data StableName a = StableName (StableName# a)`
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData ThreadId where
     rnf !_ = () -- assumes `data ThreadId = ThreadId ThreadId#`
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData Unique where
     rnf !_ = () -- assumes `newtype Unique = Unique Integer`
 
 #if MIN_VERSION_base(4,8,0)
 -- | __NOTE__: Only defined for @base-4.8.0.0@ and later
 --
--- /Since: 1.4.0.0/
+-- @since 1.4.0.0
 instance NFData TypeRep where
     rnf tyrep = rnfTypeRep tyrep
 
 -- | __NOTE__: Only defined for @base-4.8.0.0@ and later
 --
--- /Since: 1.4.0.0/
+-- @since 1.4.0.0
 instance NFData TyCon where
     rnf tycon = rnfTyCon tycon
 #endif
 
 -- | __NOTE__: Only strict in the reference and not the referenced value.
 --
--- /Since: 1.4.2.0/
+-- @since 1.4.2.0
 instance NFData (IORef a) where
   rnf !_ = ()
 
 -- | __NOTE__: Only strict in the reference and not the referenced value.
 --
--- /Since: 1.4.2.0/
+-- @since 1.4.2.0
 instance NFData (STRef s a) where
   rnf !_ = ()
 
 -- | __NOTE__: Only strict in the reference and not the referenced value.
 --
--- /Since: 1.4.2.0/
+-- @since 1.4.2.0
 instance NFData (MVar a) where
   rnf !_ = ()
 
@@ -437,7 +437,7 @@ instance NFData (MVar a) where
 -- GHC Specifics
 
 #if __GLASGOW_HASKELL__ >= 702
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData Fingerprint where
     rnf (Fingerprint _ _) = ()
 #endif
@@ -445,109 +445,109 @@ instance NFData Fingerprint where
 ----------------------------------------------------------------------------
 -- Foreign.Ptr
 
--- |/Since: 1.4.2.0/
+-- |@since 1.4.2.0
 instance NFData (Ptr a) where rnf !_ = ()
 
--- |/Since: 1.4.2.0/
+-- |@since 1.4.2.0
 instance NFData (FunPtr a) where rnf !_ = ()
 
 ----------------------------------------------------------------------------
 -- Foreign.C.Types
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CChar where rnf !_ = ()
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CSChar where rnf !_ = ()
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CUChar where rnf !_ = ()
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CShort where rnf !_ = ()
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CUShort where rnf !_ = ()
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CInt where rnf !_ = ()
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CUInt where rnf !_ = ()
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CLong where rnf !_ = ()
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CULong where rnf !_ = ()
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CPtrdiff where rnf !_ = ()
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CSize where rnf !_ = ()
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CWchar where rnf !_ = ()
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CSigAtomic where rnf !_ = ()
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CLLong where rnf !_ = ()
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CULLong where rnf !_ = ()
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CIntPtr where rnf !_ = ()
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CUIntPtr where rnf !_ = ()
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CIntMax where rnf !_ = ()
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CUIntMax where rnf !_ = ()
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CClock where rnf !_ = ()
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CTime where rnf !_ = ()
 
 #if MIN_VERSION_base(4,4,0)
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CUSeconds where rnf !_ = ()
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CSUSeconds where rnf !_ = ()
 #endif
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CFloat where rnf !_ = ()
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CDouble where rnf !_ = ()
 
 -- NOTE: The types `CFile`, `CFPos`, and `CJmpBuf` below are not
 -- newtype wrappers rather defined as field-less single-constructor
 -- types.
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CFile where rnf !_ = ()
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CFpos where rnf !_ = ()
 
--- |/Since: 1.4.0.0/
+-- |@since 1.4.0.0
 instance NFData CJmpBuf where rnf !_ = ()
 
 ----------------------------------------------------------------------------
 -- System.Exit
 
--- |/Since: 1.4.2.0/
+-- |@since 1.4.2.0
 instance NFData ExitCode where
   rnf (ExitFailure n) = rnf n
   rnf ExitSuccess     = ()
