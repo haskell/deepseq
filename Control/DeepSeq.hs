@@ -71,7 +71,7 @@ import Data.Complex
 import Data.Array
 import Data.Fixed
 import Data.Version
-import Data.Monoid
+import Data.Monoid as Mon
 import Data.Unique ( Unique )
 import Foreign.Ptr
 import Foreign.C.Types
@@ -91,6 +91,11 @@ import Data.Functor.Identity ( Identity(..) )
 import Data.Typeable ( TypeRep, TyCon, rnfTypeRep, rnfTyCon )
 import Data.Void ( Void, absurd )
 import Numeric.Natural ( Natural )
+#endif
+
+#if MIN_VERSION_base(4,9,0)
+import Data.List.NonEmpty ( NonEmpty (..) )
+import Data.Semigroup as Semi
 #endif
 
 #if __GLASGOW_HASKELL__ >= 702
@@ -368,12 +373,12 @@ instance NFData a => NFData (Dual a) where
     rnf = rnf . getDual
 
 -- |@since 1.4.0.0
-instance NFData a => NFData (First a) where
-    rnf = rnf . getFirst
+instance NFData a => NFData (Mon.First a) where
+    rnf = rnf . Mon.getFirst
 
 -- |@since 1.4.0.0
-instance NFData a => NFData (Last a) where
-    rnf = rnf . getLast
+instance NFData a => NFData (Mon.Last a) where
+    rnf = rnf . Mon.getLast
 
 -- |@since 1.4.0.0
 instance NFData Any where rnf = rnf . getAny
@@ -551,6 +556,43 @@ instance NFData CJmpBuf where rnf !_ = ()
 instance NFData ExitCode where
   rnf (ExitFailure n) = rnf n
   rnf ExitSuccess     = ()
+
+----------------------------------------------------------------------------
+-- instances previously provided by semigroups package
+
+#if MIN_VERSION_base(4,9,0)
+-- |@since 1.4.2.0
+instance NFData a => NFData (NonEmpty a) where
+  rnf (x :| xs) = rnf x `seq` rnf xs
+
+-- |@since 1.4.2.0
+instance NFData a => NFData (Min a) where
+  rnf (Min a) = rnf a
+
+-- |@since 1.4.2.0
+instance NFData a => NFData (Max a) where
+  rnf (Max a) = rnf a
+
+-- |@since 1.4.2.0
+instance (NFData a, NFData b) => NFData (Arg a b) where
+  rnf (Arg a b) = rnf a `seq` rnf b `seq` ()
+
+-- |@since 1.4.2.0
+instance NFData a => NFData (Semi.First a) where
+  rnf (Semi.First a) = rnf a
+
+-- |@since 1.4.2.0
+instance NFData a => NFData (Semi.Last a) where
+  rnf (Semi.Last a) = rnf a
+
+-- |@since 1.4.2.0
+instance NFData m => NFData (WrappedMonoid m) where
+  rnf (WrapMonoid a) = rnf a
+
+-- |@since 1.4.2.0
+instance NFData a => NFData (Option a) where
+  rnf (Option a) = rnf a
+#endif
 
 ----------------------------------------------------------------------------
 -- Tuples

@@ -1,6 +1,11 @@
 # Changelog for [`deepseq` package](http://hackage.haskell.org/package/deepseq)
 
-## 1.4.2.0  *Oct 2015*
+## 1.4.2.0  *Dec 2015*
+
+  * Added instances for types provided by `semigroups` prior to
+    `base-4.9` (i.e. `NonEmpty`, `Min`, `Max`, `Arg`,
+    `Semigroup.First`, `Semigroup.Last`, `WrappedMonoid`, and
+    `Option`) ([#11](https://github.com/haskell/deepseq/issues/11))
 
   * Added instances for `Ptr` and `FunPtr`
     ([#10](https://github.com/haskell/deepseq/pull/10))
