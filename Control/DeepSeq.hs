@@ -86,9 +86,14 @@ import Data.Ord ( Down(Down) )
 import Data.Proxy ( Proxy(Proxy) )
 #endif
 
+#if MIN_VERSION_base(4,9,0)
+import Type.Reflection ( TypeRep, TypeRepX, TyCon, rnfTypeRep, rnfTypeRepX, rnfTyCon )
+#elif MIN_VERSION_base(4,8,0)
+import Data.Typeable ( TypeRep, TyCon, rnfTypeRep, rnfTyCon )
+#endif
+
 #if MIN_VERSION_base(4,8,0)
 import Data.Functor.Identity ( Identity(..) )
-import Data.Typeable ( TypeRep, TyCon, rnfTypeRep, rnfTyCon )
 import Data.Void ( Void, absurd )
 import Numeric.Natural ( Natural )
 #endif
@@ -406,7 +411,27 @@ instance NFData ThreadId where
 instance NFData Unique where
     rnf !_ = () -- assumes `newtype Unique = Unique Integer`
 
-#if MIN_VERSION_base(4,8,0)
+#if MIN_VERSION_base(4,9,0)
+-- | __NOTE__: Only defined for @base-4.9.0.0@ and later
+--
+-- @since 1.4.0.0
+instance NFData (TypeRep a) where
+    rnf tyrep = rnfTypeRep tyrep
+
+-- | __NOTE__: Only defined for @base-4.8.0.0@ and later
+--
+-- @since 1.4.0.0
+instance NFData TypeRepX where
+    rnf tyrep = rnfTypeRepX tyrep
+
+-- | __NOTE__: Only defined for @base-4.8.0.0@ and later
+--
+-- @since 1.4.0.0
+instance NFData TyCon where
+    rnf tycon = rnfTyCon tycon
+
+#elif MIN_VERSION_base(4,8,0)
+
 -- | __NOTE__: Only defined for @base-4.8.0.0@ and later
 --
 -- @since 1.4.0.0
