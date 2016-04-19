@@ -98,6 +98,13 @@ import Data.List.NonEmpty ( NonEmpty (..) )
 import Data.Semigroup as Semi
 #endif
 
+#if MIN_VERSION_base(4,9,0)
+import GHC.Stack.Types ( CallStack(..), SrcLoc(..) )
+#elif MIN_VERSION_base(4,8,1)
+import GHC.Stack ( CallStack(..) )
+import GHC.SrcLoc ( SrcLoc(..) )
+#endif
+
 #if __GLASGOW_HASKELL__ >= 702
 import GHC.Fingerprint.Type ( Fingerprint(..) )
 import GHC.Generics
@@ -592,6 +599,38 @@ instance NFData m => NFData (WrappedMonoid m) where
 -- |@since 1.4.2.0
 instance NFData a => NFData (Option a) where
   rnf (Option a) = rnf a
+#endif
+
+----------------------------------------------------------------------------
+-- GHC.Stack
+
+#if MIN_VERSION_base(4,9,0)
+-- |@since 1.4.2.0
+instance NFData SrcLoc where
+  rnf (SrcLoc a b c d e f g) = rnf a `seq` rnf b `seq` rnf c `seq`
+                               rnf d `seq` rnf e `seq` rnf f `seq` rnf g
+
+-- |@since 1.4.2.0
+instance NFData CallStack where
+  rnf EmptyCallStack = ()
+  rnf (PushCallStack a b c) = rnf a `seq` rnf b `seq` rnf c
+  rnf (FreezeCallStack a)   = rnf a
+
+#elif MIN_VERSION_base(4,8,1)
+-- |@since 1.4.2.0
+instance NFData SrcLoc where
+  -- base-4.8 didn't expose the 'SrcLoc' constructor
+  rnf sl = rnf (srcLocPackage   sl) `seq`
+           rnf (srcLocModule    sl) `seq`
+           rnf (srcLocFile      sl) `seq`
+           rnf (srcLocStartLine sl) `seq`
+           rnf (srcLocStartCol  sl) `seq`
+           rnf (srcLocEndLine   sl) `seq`
+           rnf (srcLocEndCol    sl)
+
+-- |@since 1.4.2.0
+instance NFData CallStack where
+  rnf = rnf . getCallStack
 #endif
 
 ----------------------------------------------------------------------------

@@ -18,6 +18,8 @@
   * Added instance for `ExitCode`
     ([#4](https://github.com/haskell/deepseq/issues/4))
 
+  * Added instances for `CallStack` and `SrcLoc`
+
   * Make `NFData (Proxy a)` instance poly-kinded
 
 ## 1.4.1.2  *Aug 2015*
