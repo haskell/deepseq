@@ -1,6 +1,8 @@
 # Changelog for [`deepseq` package](http://hackage.haskell.org/package/deepseq)
 
-## 1.4.2.0  *Dec 2015*
+## 1.4.2.0  *Apr 2016*
+
+  * Bundled with GHC 8.0.1
 
   * Added instances for types provided by `semigroups` prior to
     `base-4.9` (i.e. `NonEmpty`, `Min`, `Max`, `Arg`,
@@ -15,6 +17,8 @@
 
   * Added instance for `ExitCode`
     ([#4](https://github.com/haskell/deepseq/issues/4))
+
+  * Make `NFData (Proxy a)` instance poly-kinded
 
 ## 1.4.1.2  *Aug 2015*
 
