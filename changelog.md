@@ -4,21 +4,21 @@
 
   * Bundled with GHC 8.0.1
 
-  * Added instances for types provided by `semigroups` prior to
+  * New instances for types provided by `semigroups` prior to
     `base-4.9` (i.e. `NonEmpty`, `Min`, `Max`, `Arg`,
     `Semigroup.First`, `Semigroup.Last`, `WrappedMonoid`, and
     `Option`) ([#11](https://github.com/haskell/deepseq/issues/11))
 
-  * Added instances for `Ptr` and `FunPtr`
+  * New instances for `Ptr` and `FunPtr`
     ([#10](https://github.com/haskell/deepseq/pull/10))
 
-  * Added instances for `IORef`, `STRef`, and `MVar`
+  * New instances for `IORef`, `STRef`, and `MVar`
     ([#6](https://github.com/haskell/deepseq/issues/6))
 
-  * Added instance for `ExitCode`
+  * New instance for `ExitCode`
     ([#4](https://github.com/haskell/deepseq/issues/4))
 
-  * Added instances for `CallStack` and `SrcLoc`
+  * New instances for `CallStack` and `SrcLoc`
 
   * Make `NFData (Proxy a)` instance poly-kinded
 
