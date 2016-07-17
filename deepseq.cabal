@@ -53,6 +53,11 @@ library
     if impl(ghc < 7.6)
       build-depends: ghc-prim == 0.2.*
 
+  if impl(ghc >= 7.8)
+    other-extensions:
+      ScopedTypeVariables
+      Trustworthy
+
   if impl(ghc < 7.4)
     build-depends: array < 0.4
 
