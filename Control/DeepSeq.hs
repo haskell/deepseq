@@ -5,16 +5,24 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE TypeOperators #-}
 # if MIN_VERSION_array(0,4,0)
+#if __GLASGOW_HASKELL__ >= 708
+-- We can't use Safe because Data.Coerce is not marked safe.
+{-# LANGUAGE Trustworthy #-}
+#else
 {-# LANGUAGE Safe #-}
+#endif
 # endif
 #endif
 #if __GLASGOW_HASKELL__ >= 706
 {-# LANGUAGE PolyKinds #-}
 #endif
+#if __GLASGOW_HASKELL__ >= 708
+{-# LANGUAGE ScopedTypeVariables #-}
+#endif
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Control.DeepSeq
--- Copyright   :  (c) The University of Glasgow 2001-2009
+-- Copyright   :  (c) The University of Glasgow 2001-2016
 -- License     :  BSD-style (see the file LICENSE)
 --
 -- Maintainer  :  libraries@haskell.org
@@ -57,7 +65,7 @@
 -- @since 1.1.0.0
 module Control.DeepSeq (
      deepseq, ($!!), force,
-     NFData(..),
+     NFData(..), rnfFoldableLTR, rnfFoldableRTL
   ) where
 
 import Control.Applicative
@@ -72,6 +80,7 @@ import Data.Array
 import Data.Fixed
 import Data.Version
 import Data.Monoid as Mon
+import Data.Foldable (Foldable (foldMap))
 import Data.Unique ( Unique )
 import Foreign.Ptr
 import Foreign.C.Types
@@ -103,6 +112,10 @@ import GHC.Stack.Types ( CallStack(..), SrcLoc(..) )
 #elif MIN_VERSION_base(4,8,1)
 import GHC.Stack ( CallStack(..) )
 import GHC.SrcLoc ( SrcLoc(..) )
+#endif
+
+#if __GLASGOW_HASKELL__ >= 708
+import Data.Coerce
 #endif
 
 #if __GLASGOW_HASKELL__ >= 702
@@ -201,6 +214,87 @@ f $!! x = x `deepseq` f x
 -- @since 1.2.0.0
 force :: (NFData a) => a -> a
 force x = x `deepseq` x
+
+newtype UnitLTR = UnitLTR {getUnitLTR :: ()}
+
+#if MIN_VERSION_base(4,9,0)
+instance Semi.Semigroup UnitLTR where
+  UnitLTR () <> y = y
+#endif
+
+instance Monoid UnitLTR where
+  mempty = UnitLTR ()
+  UnitLTR () `mappend` y = y
+
+-- It would be nice to use Data.Monoid.Dual instead of
+-- another newtype, but that doesn't seem to inline
+-- very well if it doesn't specialize.
+newtype UnitRTL = UnitRTL {getUnitRTL :: ()}
+
+#if MIN_VERSION_base(4,9,0)
+instance Semi.Semigroup UnitRTL where
+  x <> UnitRTL () = x
+#endif
+
+instance Monoid UnitRTL where
+  mempty = UnitRTL ()
+  x `mappend` UnitRTL () = x
+
+-- | A definition of `rnf` for `Foldable` types that evaluates them
+-- from left to right.
+--
+-- @
+-- data ConsList a = Cons a (ConsList a) | Nil deriving (Foldable)
+-- instance NFData a => NFData (ConsList a) where
+--   rnf = rnfFoldableLTR
+-- @
+--
+-- Caution: this only works properly if the `Foldable` instance
+-- folds over all relevant structure.
+--
+-- @
+-- rnfFoldableLTR (Left undefined) = ()
+-- rnfFoldableLTR (undefined, ()) = ()
+-- @
+#if __GLASGOW_HASKELL__ >= 708
+rnfFoldableLTR :: forall f a . (Foldable f, NFData a) => f a -> ()
+rnfFoldableLTR = getUnitLTR . foldMap (coerce (rnf :: a -> ()))
+#else
+rnfFoldableLTR :: (Foldable f, NFData a) => f a -> ()
+rnfFoldableLTR = getUnitLTR . foldMap (UnitLTR . rnf)
+#endif
+
+-- | A definition of `rnf` for `Foldable` types that evaluates them
+-- from right to left.
+--
+-- @
+-- data SnocList a = Snoc (SnocList a) a | SNil deriving (Foldable)
+-- instance NFData a => NFData (SnocList a) where
+--   rnf = rnfFoldableRTL
+-- @
+--
+-- Caution: this only works properly if the `Foldable` instance
+-- folds over all relevant structure.
+--
+-- @
+-- rnfFoldableRTL (Left undefined) = ()
+-- rnfFoldableRTL (undefined, ()) = ()
+-- @
+#if __GLASGOW_HASKELL__ >= 708
+rnfFoldableRTL :: forall f a . (Foldable f, NFData a) => f a -> ()
+rnfFoldableRTL = getUnitRTL . foldMap (coerce (rnf :: a -> ()))
+#else
+rnfFoldableRTL :: (Foldable f, NFData a) => f a -> ()
+rnfFoldableRTL = getUnitRTL . foldMap (UnitRTL . rnf)
+#endif
+
+#ifdef __GLASGOW_HASKELL__
+{-# INLINABLE rnfFoldableLTR #-}
+{-# INLINABLE rnfFoldableRTL #-}
+#else
+{-# INLINE rnfFoldableLTR #-}
+{-# INLINE rnfFoldableRTL #-}
+#endif
 
 -- | A class of types that can be fully evaluated.
 --

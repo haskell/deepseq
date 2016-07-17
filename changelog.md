@@ -1,5 +1,9 @@
 # Changelog for [`deepseq` package](http://hackage.haskell.org/package/deepseq)
 
+## ????
+
+  * New functions `rnfFoldableLTR` and `rnfFoldableRTL`
+
 ## 1.4.2.0  *Apr 2016*
 
   * Bundled with GHC 8.0.1
