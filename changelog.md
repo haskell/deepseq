@@ -1,5 +1,14 @@
 # Changelog for [`deepseq` package](http://hackage.haskell.org/package/deepseq)
 
+## 1.4.3.0 *TBD*
+
+  * Changed behavior of generic `NFData` instances for constructor-less data
+    types. Before, a generic `rnf` implementation would always `error` on a
+    data type with no constructors. Now, it will force the argument, so if
+    the argument is a diverging computation, a generic `rnf` implementation
+    will actually trigger the diverging computation.
+    ([#19](https://github.com/haskell/deepseq/issues/19))
+
 ## 1.4.2.0  *Apr 2016*
 
   * Bundled with GHC 8.0.1

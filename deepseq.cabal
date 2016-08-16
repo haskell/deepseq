@@ -1,5 +1,5 @@
 name:           deepseq
-version:        1.4.2.0
+version:        1.4.3.0
 -- NOTE: Don't forget to update ./changelog.md
 license:        BSD3
 license-file:   LICENSE
@@ -52,6 +52,10 @@ library
     -- GHC.Generics lived in `ghc-prim` for GHC 7.2 & GHC 7.4
     if impl(ghc < 7.6)
       build-depends: ghc-prim == 0.2.*
+
+  if impl(ghc>=7.8)
+    other-extensions:
+      EmptyCase
 
   if impl(ghc < 7.4)
     build-depends: array < 0.4
