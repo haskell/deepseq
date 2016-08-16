@@ -11,6 +11,9 @@
 #if __GLASGOW_HASKELL__ >= 706
 {-# LANGUAGE PolyKinds #-}
 #endif
+#if __GLASGOW_HASKELL__ >= 708
+{-# LANGUAGE EmptyCase #-}
+#endif
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Control.DeepSeq
@@ -114,7 +117,11 @@ class GNFData f where
   grnf :: f a -> ()
 
 instance GNFData V1 where
-  grnf = error "Control.DeepSeq.rnf: uninhabited type"
+#if __GLASGOW_HASKELL__ >= 708
+  grnf x = case x of {}
+#else
+  grnf !_ = error "Control.DeepSeq.rnf: uninhabited type"
+#endif
 
 instance GNFData U1 where
   grnf U1 = ()
