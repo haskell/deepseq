@@ -59,7 +59,7 @@
 --
 -- @since 1.1.0.0
 module Control.DeepSeq (
-     deepseq, ($!!), force,
+     deepseq, ($!!), force, (<$!!>),
      NFData(..),
   ) where
 
@@ -208,6 +208,13 @@ f $!! x = x `deepseq` f x
 -- @since 1.2.0.0
 force :: (NFData a) => a -> a
 force x = x `deepseq` x
+
+-- | Deeply strict version of 'Control.Applicative.<$>'.
+--
+-- @since 1.4.3.0
+(<$!!>) :: (Monad m, NFData b) => (a -> b) -> m a -> m b
+f <$!!> m = m >>= \x -> return $!! f x
+infixl 4 <$!!>
 
 -- | A class of types that can be fully evaluated.
 --
