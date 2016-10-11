@@ -61,6 +61,8 @@
 module Control.DeepSeq (
      deepseq, ($!!), force, (<$!!>), rwhnf,
      NFData(..),
+     NFData1(..), rnf1,
+     NFData2(..), rnf2
   ) where
 
 import Control.Applicative
@@ -303,6 +305,26 @@ class NFData a where
     rnf = grnf . from
 #endif
 
+
+-- | A class of functors that can be fully evaluated.
+--
+-- @since 1.4.3.0
+class NFData1 f where
+    liftRnf :: (a -> ()) -> f a -> ()
+
+rnf1 :: (NFData1 f, NFData a) => f a -> ()
+rnf1 = liftRnf rnf
+
+-- | A class of bifunctors that can be fully evaluated.
+--
+-- @since 1.4.3.0
+class NFData2 p where
+    liftRnf2 :: (a -> ()) -> (b -> ()) -> p a b -> ()
+
+rnf2 :: (NFData2 p, NFData a, NFData b) => p a b -> ()
+rnf2 = liftRnf2 rnf rnf
+
+
 instance NFData Int      where rnf = rwhnf
 instance NFData Word     where rnf = rwhnf
 instance NFData Integer  where rnf = rwhnf
@@ -327,12 +349,16 @@ instance NFData Word64   where rnf = rwhnf
 #if MIN_VERSION_base(4,7,0)
 -- |@since 1.4.0.0
 instance NFData (Proxy a) where rnf Proxy = ()
+instance NFData1 Proxy    where liftRnf _ Proxy = ()
 #endif
 
 #if MIN_VERSION_base(4,8,0)
 -- |@since 1.4.0.0
 instance NFData a => NFData (Identity a) where
-    rnf = rnf . runIdentity
+    rnf = rnf1
+
+instance NFData1 Identity where
+    liftRnf r = r . runIdentity
 
 -- | Defined as @'rnf' = 'absurd'@.
 --
@@ -371,29 +397,40 @@ instance (RealFloat a, NFData a) => NFData (Complex a) where
                rnf y `seq`
                ()
 
-instance NFData a => NFData (Maybe a) where
-    rnf Nothing  = ()
-    rnf (Just x) = rnf x
+instance NFData a => NFData (Maybe a) where rnf = rnf1
+instance NFData1 Maybe where
+    liftRnf _r Nothing  = ()
+    liftRnf  r (Just x) = r x
 
-instance (NFData a, NFData b) => NFData (Either a b) where
-    rnf (Left x)  = rnf x
-    rnf (Right y) = rnf y
+instance (NFData a, NFData b) => NFData (Either a b) where rnf = rnf1
+instance (NFData a) => NFData1 (Either a) where liftRnf = liftRnf2 rnf
+instance NFData2 Either where
+    liftRnf2  l _r (Left x)  = l x
+    liftRnf2 _l  r (Right y) = r y
 
 -- |@since 1.3.0.0
 instance NFData Data.Version.Version where
     rnf (Data.Version.Version branch tags) = rnf branch `seq` rnf tags
 
-instance NFData a => NFData [a] where
-    rnf [] = ()
-    rnf (x:xs) = rnf x `seq` rnf xs
+instance NFData a => NFData [a] where rnf = rnf1
+instance NFData1 [] where
+    liftRnf r = go
+      where
+        go [] = ()
+        go (x:xs) = r x `seq` go xs
 
 -- |@since 1.4.0.0
-instance NFData a => NFData (ZipList a) where
-    rnf = rnf . getZipList
+instance NFData a => NFData (ZipList a) where rnf = rnf1
+instance NFData1 ZipList where
+    liftRnf r = liftRnf r . getZipList
 
 -- |@since 1.4.0.0
 instance NFData a => NFData (Const a b) where
     rnf = rnf . getConst
+instance NFData a => NFData1 (Const a) where
+    liftRnf _ = rnf . getConst
+instance NFData2 Const where
+    liftRnf2 r _ = r . getConst
 
 #if __GLASGOW_HASKELL__ >= 711
 instance (NFData a, NFData b) => NFData (Array a b) where
@@ -404,21 +441,25 @@ instance (Ix a, NFData a, NFData b) => NFData (Array a b) where
 
 #if MIN_VERSION_base(4,6,0)
 -- |@since 1.4.0.0
-instance NFData a => NFData (Down a) where
-    rnf (Down x) = rnf x
+instance NFData a => NFData (Down a) where rnf = rnf1
+instance NFData1 Down where
+    liftRnf r (Down x) = r x
 #endif
 
 -- |@since 1.4.0.0
-instance NFData a => NFData (Dual a) where
-    rnf = rnf . getDual
+instance NFData a => NFData (Dual a) where rnf = rnf1
+instance NFData1 Dual where
+    liftRnf r (Dual x) = r x
 
 -- |@since 1.4.0.0
-instance NFData a => NFData (Mon.First a) where
-    rnf = rnf . Mon.getFirst
+instance NFData a => NFData (Mon.First a) where rnf = rnf1
+instance NFData1 Mon.First  where
+    liftRnf r (Mon.First x) = liftRnf r x
 
 -- |@since 1.4.0.0
-instance NFData a => NFData (Mon.Last a) where
-    rnf = rnf . Mon.getLast
+instance NFData a => NFData (Mon.Last a) where rnf = rnf1
+instance NFData1 Mon.Last  where
+    liftRnf r (Mon.Last  x) = liftRnf r x
 
 -- |@since 1.4.0.0
 instance NFData Any where rnf = rnf . getAny
@@ -427,12 +468,14 @@ instance NFData Any where rnf = rnf . getAny
 instance NFData All where rnf = rnf . getAll
 
 -- |@since 1.4.0.0
-instance NFData a => NFData (Sum a) where
-    rnf = rnf . getSum
+instance NFData a => NFData (Sum a) where rnf = rnf1
+instance NFData1 Sum where
+    liftRnf r (Sum x) = r x
 
 -- |@since 1.4.0.0
-instance NFData a => NFData (Product a) where
-    rnf = rnf . getProduct
+instance NFData a => NFData (Product a) where rnf = rnf1
+instance NFData1 Product where
+    liftRnf r (Product x) = r x
 
 -- |@since 1.4.0.0
 instance NFData (StableName a) where
@@ -602,36 +645,45 @@ instance NFData ExitCode where
 
 #if MIN_VERSION_base(4,9,0)
 -- |@since 1.4.2.0
-instance NFData a => NFData (NonEmpty a) where
-  rnf (x :| xs) = rnf x `seq` rnf xs
+instance NFData a => NFData (NonEmpty a) where rnf = rnf1
+instance NFData1 NonEmpty where
+  liftRnf r (x :| xs) = r x `seq` liftRnf r xs
 
 -- |@since 1.4.2.0
-instance NFData a => NFData (Min a) where
-  rnf (Min a) = rnf a
+instance NFData a => NFData (Min a) where rnf = rnf1
+instance NFData1 Min where
+  liftRnf r (Min a) = r a
 
 -- |@since 1.4.2.0
-instance NFData a => NFData (Max a) where
-  rnf (Max a) = rnf a
+instance NFData a => NFData (Max a) where rnf = rnf1
+instance NFData1 Max where
+  liftRnf r (Max a) = r a
 
 -- |@since 1.4.2.0
-instance (NFData a, NFData b) => NFData (Arg a b) where
-  rnf (Arg a b) = rnf a `seq` rnf b `seq` ()
+instance (NFData a, NFData b) => NFData (Arg a b) where rnf = rnf2
+instance (NFData a) => NFData1 (Arg a) where liftRnf = liftRnf2 rnf
+instance NFData2 Arg where
+  liftRnf2 r r' (Arg a b) = r a `seq` r' b `seq` ()
 
 -- |@since 1.4.2.0
-instance NFData a => NFData (Semi.First a) where
-  rnf (Semi.First a) = rnf a
+instance NFData a => NFData (Semi.First a) where rnf = rnf1
+instance NFData1 Semi.First where
+  liftRnf r (Semi.First a) = r a
 
 -- |@since 1.4.2.0
-instance NFData a => NFData (Semi.Last a) where
-  rnf (Semi.Last a) = rnf a
+instance NFData a => NFData (Semi.Last a) where rnf = rnf1
+instance NFData1 Semi.Last where
+  liftRnf r (Semi.Last a) = r a
 
 -- |@since 1.4.2.0
-instance NFData m => NFData (WrappedMonoid m) where
-  rnf (WrapMonoid a) = rnf a
+instance NFData m => NFData (WrappedMonoid m) where rnf = rnf1
+instance NFData1 WrappedMonoid where
+  liftRnf r (WrapMonoid a) = r a
 
 -- |@since 1.4.2.0
-instance NFData a => NFData (Option a) where
-  rnf (Option a) = rnf a
+instance NFData a => NFData (Option a) where rnf = rnf1
+instance NFData1 Option where
+  liftRnf r (Option a) = liftRnf r a
 #endif
 
 ----------------------------------------------------------------------------
@@ -669,8 +721,10 @@ instance NFData CallStack where
 ----------------------------------------------------------------------------
 -- Tuples
 
-instance (NFData a, NFData b) => NFData (a,b) where
-  rnf (x,y) = rnf x `seq` rnf y
+instance (NFData a, NFData b) => NFData (a,b) where rnf = rnf2
+instance (NFData a) => NFData1 ((,) a) where liftRnf = liftRnf2 rnf
+instance NFData2 (,) where
+  liftRnf2 r r' (x,y) = r x `seq` r' y
 
 instance (NFData a, NFData b, NFData c) => NFData (a,b,c) where
   rnf (x,y,z) = rnf x `seq` rnf y `seq` rnf z
