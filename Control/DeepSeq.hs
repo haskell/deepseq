@@ -59,7 +59,7 @@
 --
 -- @since 1.1.0.0
 module Control.DeepSeq (
-     deepseq, ($!!), force, (<$!!>),
+     deepseq, ($!!), force, (<$!!>), rwhnf,
      NFData(..),
   ) where
 
@@ -216,6 +216,20 @@ force x = x `deepseq` x
 f <$!!> m = m >>= \x -> return $!! f x
 infixl 4 <$!!>
 
+-- | Reduce to weak head normal form
+--
+-- Useful for defining 'NFData' for types for which NF=WHNF holds.
+--
+-- > data T = C1 | C2 | C3
+-- > instance NFData T where rnf = rwhnf
+--
+-- @since 1.4.3.0
+rwhnf :: a -> ()
+rwhnf = (`seq` ())
+{-# INLINE rwhnf #-}
+
+-- Note: the 'rwhnf' is defined point-free to help aggressive inlining
+
 -- | A class of types that can be fully evaluated.
 --
 -- @since 1.1.0.0
@@ -275,6 +289,10 @@ class NFData a where
     --
     -- or alternatively
     --
+    -- > instance NFData Colour where rnf = rwhnf
+    --
+    -- or
+    --
     -- > {-# LANGUAGE BangPatterns #-}
     -- > instance NFData Colour where rnf !_ = ()
     --
@@ -285,26 +303,26 @@ class NFData a where
     rnf = grnf . from
 #endif
 
-instance NFData Int      where rnf !_ = ()
-instance NFData Word     where rnf !_ = ()
-instance NFData Integer  where rnf !_ = ()
-instance NFData Float    where rnf !_ = ()
-instance NFData Double   where rnf !_ = ()
+instance NFData Int      where rnf = rwhnf
+instance NFData Word     where rnf = rwhnf
+instance NFData Integer  where rnf = rwhnf
+instance NFData Float    where rnf = rwhnf
+instance NFData Double   where rnf = rwhnf
 
-instance NFData Char     where rnf !_ = ()
-instance NFData Bool     where rnf !_ = ()
-instance NFData Ordering where rnf !_ = ()
-instance NFData ()       where rnf !_ = ()
+instance NFData Char     where rnf = rwhnf
+instance NFData Bool     where rnf = rwhnf
+instance NFData Ordering where rnf = rwhnf
+instance NFData ()       where rnf = rwhnf
 
-instance NFData Int8     where rnf !_ = ()
-instance NFData Int16    where rnf !_ = ()
-instance NFData Int32    where rnf !_ = ()
-instance NFData Int64    where rnf !_ = ()
+instance NFData Int8     where rnf = rwhnf
+instance NFData Int16    where rnf = rwhnf
+instance NFData Int32    where rnf = rwhnf
+instance NFData Int64    where rnf = rwhnf
 
-instance NFData Word8    where rnf !_ = ()
-instance NFData Word16   where rnf !_ = ()
-instance NFData Word32   where rnf !_ = ()
-instance NFData Word64   where rnf !_ = ()
+instance NFData Word8    where rnf = rwhnf
+instance NFData Word16   where rnf = rwhnf
+instance NFData Word32   where rnf = rwhnf
+instance NFData Word64   where rnf = rwhnf
 
 #if MIN_VERSION_base(4,7,0)
 -- |@since 1.4.0.0
@@ -323,17 +341,17 @@ instance NFData Void where
     rnf = absurd
 
 -- |@since 1.4.0.0
-instance NFData Natural  where rnf !_ = ()
+instance NFData Natural  where rnf = rwhnf
 #endif
 
 -- |@since 1.3.0.0
-instance NFData (Fixed a) where rnf !_ = ()
+instance NFData (Fixed a) where rnf = rwhnf
 
 -- |This instance is for convenience and consistency with 'seq'.
 -- This assumes that WHNF is equivalent to NF for functions.
 --
 -- @since 1.3.0.0
-instance NFData (a -> b) where rnf !_ = ()
+instance NFData (a -> b) where rnf = rwhnf
 
 --Rational and complex numbers.
 
@@ -418,15 +436,15 @@ instance NFData a => NFData (Product a) where
 
 -- |@since 1.4.0.0
 instance NFData (StableName a) where
-    rnf !_ = () -- assumes `data StableName a = StableName (StableName# a)`
+    rnf = rwhnf -- assumes `data StableName a = StableName (StableName# a)`
 
 -- |@since 1.4.0.0
 instance NFData ThreadId where
-    rnf !_ = () -- assumes `data ThreadId = ThreadId ThreadId#`
+    rnf = rwhnf -- assumes `data ThreadId = ThreadId ThreadId#`
 
 -- |@since 1.4.0.0
 instance NFData Unique where
-    rnf !_ = () -- assumes `newtype Unique = Unique Integer`
+    rnf = rwhnf -- assumes `newtype Unique = Unique Integer`
 
 #if MIN_VERSION_base(4,8,0)
 -- | __NOTE__: Only defined for @base-4.8.0.0@ and later
@@ -446,19 +464,19 @@ instance NFData TyCon where
 --
 -- @since 1.4.2.0
 instance NFData (IORef a) where
-  rnf !_ = ()
+  rnf = rwhnf
 
 -- | __NOTE__: Only strict in the reference and not the referenced value.
 --
 -- @since 1.4.2.0
 instance NFData (STRef s a) where
-  rnf !_ = ()
+  rnf = rwhnf
 
 -- | __NOTE__: Only strict in the reference and not the referenced value.
 --
 -- @since 1.4.2.0
 instance NFData (MVar a) where
-  rnf !_ = ()
+  rnf = rwhnf
 
 ----------------------------------------------------------------------------
 -- GHC Specifics
@@ -473,103 +491,103 @@ instance NFData Fingerprint where
 -- Foreign.Ptr
 
 -- |@since 1.4.2.0
-instance NFData (Ptr a) where rnf !_ = ()
+instance NFData (Ptr a) where rnf = rwhnf
 
 -- |@since 1.4.2.0
-instance NFData (FunPtr a) where rnf !_ = ()
+instance NFData (FunPtr a) where rnf = rwhnf
 
 ----------------------------------------------------------------------------
 -- Foreign.C.Types
 
 -- |@since 1.4.0.0
-instance NFData CChar where rnf !_ = ()
+instance NFData CChar where rnf = rwhnf
 
 -- |@since 1.4.0.0
-instance NFData CSChar where rnf !_ = ()
+instance NFData CSChar where rnf = rwhnf
 
 -- |@since 1.4.0.0
-instance NFData CUChar where rnf !_ = ()
+instance NFData CUChar where rnf = rwhnf
 
 -- |@since 1.4.0.0
-instance NFData CShort where rnf !_ = ()
+instance NFData CShort where rnf = rwhnf
 
 -- |@since 1.4.0.0
-instance NFData CUShort where rnf !_ = ()
+instance NFData CUShort where rnf = rwhnf
 
 -- |@since 1.4.0.0
-instance NFData CInt where rnf !_ = ()
+instance NFData CInt where rnf = rwhnf
 
 -- |@since 1.4.0.0
-instance NFData CUInt where rnf !_ = ()
+instance NFData CUInt where rnf = rwhnf
 
 -- |@since 1.4.0.0
-instance NFData CLong where rnf !_ = ()
+instance NFData CLong where rnf = rwhnf
 
 -- |@since 1.4.0.0
-instance NFData CULong where rnf !_ = ()
+instance NFData CULong where rnf = rwhnf
 
 -- |@since 1.4.0.0
-instance NFData CPtrdiff where rnf !_ = ()
+instance NFData CPtrdiff where rnf = rwhnf
 
 -- |@since 1.4.0.0
-instance NFData CSize where rnf !_ = ()
+instance NFData CSize where rnf = rwhnf
 
 -- |@since 1.4.0.0
-instance NFData CWchar where rnf !_ = ()
+instance NFData CWchar where rnf = rwhnf
 
 -- |@since 1.4.0.0
-instance NFData CSigAtomic where rnf !_ = ()
+instance NFData CSigAtomic where rnf = rwhnf
 
 -- |@since 1.4.0.0
-instance NFData CLLong where rnf !_ = ()
+instance NFData CLLong where rnf = rwhnf
 
 -- |@since 1.4.0.0
-instance NFData CULLong where rnf !_ = ()
+instance NFData CULLong where rnf = rwhnf
 
 -- |@since 1.4.0.0
-instance NFData CIntPtr where rnf !_ = ()
+instance NFData CIntPtr where rnf = rwhnf
 
 -- |@since 1.4.0.0
-instance NFData CUIntPtr where rnf !_ = ()
+instance NFData CUIntPtr where rnf = rwhnf
 
 -- |@since 1.4.0.0
-instance NFData CIntMax where rnf !_ = ()
+instance NFData CIntMax where rnf = rwhnf
 
 -- |@since 1.4.0.0
-instance NFData CUIntMax where rnf !_ = ()
+instance NFData CUIntMax where rnf = rwhnf
 
 -- |@since 1.4.0.0
-instance NFData CClock where rnf !_ = ()
+instance NFData CClock where rnf = rwhnf
 
 -- |@since 1.4.0.0
-instance NFData CTime where rnf !_ = ()
+instance NFData CTime where rnf = rwhnf
 
 #if MIN_VERSION_base(4,4,0)
 -- |@since 1.4.0.0
-instance NFData CUSeconds where rnf !_ = ()
+instance NFData CUSeconds where rnf = rwhnf
 
 -- |@since 1.4.0.0
-instance NFData CSUSeconds where rnf !_ = ()
+instance NFData CSUSeconds where rnf = rwhnf
 #endif
 
 -- |@since 1.4.0.0
-instance NFData CFloat where rnf !_ = ()
+instance NFData CFloat where rnf = rwhnf
 
 -- |@since 1.4.0.0
-instance NFData CDouble where rnf !_ = ()
+instance NFData CDouble where rnf = rwhnf
 
 -- NOTE: The types `CFile`, `CFPos`, and `CJmpBuf` below are not
 -- newtype wrappers rather defined as field-less single-constructor
 -- types.
 
 -- |@since 1.4.0.0
-instance NFData CFile where rnf !_ = ()
+instance NFData CFile where rnf = rwhnf
 
 -- |@since 1.4.0.0
-instance NFData CFpos where rnf !_ = ()
+instance NFData CFpos where rnf = rwhnf
 
 -- |@since 1.4.0.0
-instance NFData CJmpBuf where rnf !_ = ()
+instance NFData CJmpBuf where rnf = rwhnf
 
 ----------------------------------------------------------------------------
 -- System.Exit
