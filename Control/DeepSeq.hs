@@ -286,6 +286,7 @@ instance NFData Double   where rnf !_ = ()
 
 instance NFData Char     where rnf !_ = ()
 instance NFData Bool     where rnf !_ = ()
+instance NFData Ordering where rnf !_ = ()
 instance NFData ()       where rnf !_ = ()
 
 instance NFData Int8     where rnf !_ = ()
