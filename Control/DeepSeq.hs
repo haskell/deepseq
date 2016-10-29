@@ -621,7 +621,7 @@ instance NFData SrcLoc where
 -- |@since 1.4.2.0
 instance NFData CallStack where
   rnf EmptyCallStack = ()
-  rnf (PushCallStack a b c) = rnf a `seq` rnf b `seq` rnf c
+  rnf (PushCallStack (a, b) c) = rnf a `seq` rnf b `seq` rnf c
   rnf (FreezeCallStack a)   = rnf a
 
 #elif MIN_VERSION_base(4,8,1)
