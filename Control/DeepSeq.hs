@@ -372,6 +372,7 @@ instance NFData Natural  where rnf = rwhnf
 
 -- |@since 1.3.0.0
 instance NFData (Fixed a) where rnf = rwhnf
+instance NFData1 Fixed where liftRnf _ = rwhnf
 
 -- |This instance is for convenience and consistency with 'seq'.
 -- This assumes that WHNF is equivalent to NF for functions.
@@ -381,7 +382,11 @@ instance NFData (a -> b) where rnf = rwhnf
 
 --Rational and complex numbers.
 
-#if __GLASGOW_HASKELL__ >= 711
+#if MIN_VERSION_base(4,9,0)
+-- | Available on @base >=4.9@
+instance NFData1 Ratio where
+  liftRnf r x = r (numerator x) `seq` r (denominator x)
+
 instance NFData a => NFData (Ratio a) where
 #else
 instance (Integral a, NFData a) => NFData (Ratio a) where
