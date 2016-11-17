@@ -726,66 +726,59 @@ instance (NFData a) => NFData1 ((,) a) where liftRnf = liftRnf2 rnf
 instance NFData2 (,) where
   liftRnf2 r r' (x,y) = r x `seq` r' y
 
-instance (NFData a, NFData b, NFData c) => NFData (a,b,c) where
-  rnf (x,y,z) = rnf x `seq` rnf y `seq` rnf z
+-- Code below is generated, see generate-nfdata-tuple.hs
+instance (NFData a1, NFData a2, NFData a3) =>
+         NFData (a1, a2, a3) where rnf = rnf2
+instance (NFData a1, NFData a2) =>
+         NFData1 ((,,) a1 a2) where liftRnf = liftRnf2 rnf
+instance (NFData a1) =>
+         NFData2 ((,,) a1) where
+  liftRnf2 r r' (x1,x2,x3) = rnf x1 `seq` r x2 `seq` r' x3
 
-instance (NFData a, NFData b, NFData c, NFData d) => NFData (a,b,c,d) where
-  rnf (x1,x2,x3,x4) = rnf x1 `seq`
-                      rnf x2 `seq`
-                      rnf x3 `seq`
-                      rnf x4
+instance (NFData a1, NFData a2, NFData a3, NFData a4) =>
+         NFData (a1, a2, a3, a4) where rnf = rnf2
+instance (NFData a1, NFData a2, NFData a3) =>
+         NFData1 ((,,,) a1 a2 a3) where liftRnf = liftRnf2 rnf
+instance (NFData a1, NFData a2) =>
+         NFData2 ((,,,) a1 a2) where
+  liftRnf2 r r' (x1,x2,x3,x4) = rnf x1 `seq` rnf x2 `seq` r x3 `seq` r' x4
 
 instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5) =>
-         NFData (a1, a2, a3, a4, a5) where
-  rnf (x1, x2, x3, x4, x5) =
-                  rnf x1 `seq`
-                  rnf x2 `seq`
-                  rnf x3 `seq`
-                  rnf x4 `seq`
-                  rnf x5
+         NFData (a1, a2, a3, a4, a5) where rnf = rnf2
+instance (NFData a1, NFData a2, NFData a3, NFData a4) =>
+         NFData1 ((,,,,) a1 a2 a3 a4) where liftRnf = liftRnf2 rnf
+instance (NFData a1, NFData a2, NFData a3) =>
+         NFData2 ((,,,,) a1 a2 a3) where
+  liftRnf2 r r' (x1,x2,x3,x4,x5) = rnf x1 `seq` rnf x2 `seq` rnf x3 `seq` r x4 `seq` r' x5
 
 instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5, NFData a6) =>
-         NFData (a1, a2, a3, a4, a5, a6) where
-  rnf (x1, x2, x3, x4, x5, x6) =
-                  rnf x1 `seq`
-                  rnf x2 `seq`
-                  rnf x3 `seq`
-                  rnf x4 `seq`
-                  rnf x5 `seq`
-                  rnf x6
+         NFData (a1, a2, a3, a4, a5, a6) where rnf = rnf2
+instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5) =>
+         NFData1 ((,,,,,) a1 a2 a3 a4 a5) where liftRnf = liftRnf2 rnf
+instance (NFData a1, NFData a2, NFData a3, NFData a4) =>
+         NFData2 ((,,,,,) a1 a2 a3 a4) where
+  liftRnf2 r r' (x1,x2,x3,x4,x5,x6) = rnf x1 `seq` rnf x2 `seq` rnf x3 `seq` rnf x4 `seq` r x5 `seq` r' x6
 
 instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5, NFData a6, NFData a7) =>
-         NFData (a1, a2, a3, a4, a5, a6, a7) where
-  rnf (x1, x2, x3, x4, x5, x6, x7) =
-                  rnf x1 `seq`
-                  rnf x2 `seq`
-                  rnf x3 `seq`
-                  rnf x4 `seq`
-                  rnf x5 `seq`
-                  rnf x6 `seq`
-                  rnf x7
+         NFData (a1, a2, a3, a4, a5, a6, a7) where rnf = rnf2
+instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5, NFData a6) =>
+         NFData1 ((,,,,,,) a1 a2 a3 a4 a5 a6) where liftRnf = liftRnf2 rnf
+instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5) =>
+         NFData2 ((,,,,,,) a1 a2 a3 a4 a5) where
+  liftRnf2 r r' (x1,x2,x3,x4,x5,x6,x7) = rnf x1 `seq` rnf x2 `seq` rnf x3 `seq` rnf x4 `seq` rnf x5 `seq` r x6 `seq` r' x7
 
 instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5, NFData a6, NFData a7, NFData a8) =>
-         NFData (a1, a2, a3, a4, a5, a6, a7, a8) where
-  rnf (x1, x2, x3, x4, x5, x6, x7, x8) =
-                  rnf x1 `seq`
-                  rnf x2 `seq`
-                  rnf x3 `seq`
-                  rnf x4 `seq`
-                  rnf x5 `seq`
-                  rnf x6 `seq`
-                  rnf x7 `seq`
-                  rnf x8
+         NFData (a1, a2, a3, a4, a5, a6, a7, a8) where rnf = rnf2
+instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5, NFData a6, NFData a7) =>
+         NFData1 ((,,,,,,,) a1 a2 a3 a4 a5 a6 a7) where liftRnf = liftRnf2 rnf
+instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5, NFData a6) =>
+         NFData2 ((,,,,,,,) a1 a2 a3 a4 a5 a6) where
+  liftRnf2 r r' (x1,x2,x3,x4,x5,x6,x7,x8) = rnf x1 `seq` rnf x2 `seq` rnf x3 `seq` rnf x4 `seq` rnf x5 `seq` rnf x6 `seq` r x7 `seq` r' x8
 
 instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5, NFData a6, NFData a7, NFData a8, NFData a9) =>
-         NFData (a1, a2, a3, a4, a5, a6, a7, a8, a9) where
-  rnf (x1, x2, x3, x4, x5, x6, x7, x8, x9) =
-                  rnf x1 `seq`
-                  rnf x2 `seq`
-                  rnf x3 `seq`
-                  rnf x4 `seq`
-                  rnf x5 `seq`
-                  rnf x6 `seq`
-                  rnf x7 `seq`
-                  rnf x8 `seq`
-                  rnf x9
+         NFData (a1, a2, a3, a4, a5, a6, a7, a8, a9) where rnf = rnf2
+instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5, NFData a6, NFData a7, NFData a8) =>
+         NFData1 ((,,,,,,,,) a1 a2 a3 a4 a5 a6 a7 a8) where liftRnf = liftRnf2 rnf
+instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5, NFData a6, NFData a7) =>
+         NFData2 ((,,,,,,,,) a1 a2 a3 a4 a5 a6 a7) where
+  liftRnf2 r r' (x1,x2,x3,x4,x5,x6,x7,x8,x9) = rnf x1 `seq` rnf x2 `seq` rnf x3 `seq` rnf x4 `seq` rnf x5 `seq` rnf x6 `seq` rnf x7 `seq` r x8 `seq` r' x9
