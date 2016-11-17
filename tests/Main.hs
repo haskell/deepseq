@@ -90,7 +90,11 @@ assertRnfEx v = handleJust isWanted (const $ return ()) $ do
 
 ----------------------------------------------------------------------------
 
-case_1, case_2, case_3, case_4_1, case_4_2, case_4_3, case_4_4 :: Test.Framework.Test
+case_1, case_2, case_3 :: Test.Framework.Test
+case_4_1, case_4_2, case_4_3, case_4_4 :: Test.Framework.Test
+#if __GLASGOW_HASKELL__ >= 706
+case_4_1b, case_4_2b, case_4_3b, case_4_4b :: Test.Framework.Test
+#endif
 
 newtype Case1 = Case1 Int
               deriving (Generic)
@@ -125,9 +129,17 @@ case_3 = testCase "Case3" $ do
 data Case4 a = Case4a
              | Case4b a a
              | Case4c a (Case4 a)
-             deriving (Generic)
+             deriving ( Generic
+#if __GLASGOW_HASKELL__ >= 706
+                      , Generic1
+#endif
+                      )
 
 instance NFData a => NFData (Case4 a)
+
+#if __GLASGOW_HASKELL__ >= 706
+instance NFData1 Case4
+#endif
 
 case_4_1 = testCase "Case4.1" $ withSeqState 0x0 $ do
     evaluate $ rnf $ (Case4a :: Case4 SeqSet)
@@ -144,9 +156,32 @@ case_4_4 = testCase "Case4.4" $ withSeqState 0xffffffffffffffff $ do
     genCase n | n > 1      = Case4c (SeqSet n) (genCase (n-1))
               | otherwise  = Case4b (SeqSet 0) (SeqSet 1)
 
+#if __GLASGOW_HASKELL__ >= 706
+case_4_1b = testCase "Case4.1b" $ withSeqState 0x0 $ do
+    evaluate $ rnf1 $ (Case4a :: Case4 SeqSet)
+
+case_4_2b = testCase "Case4.2b" $ withSeqState 0x3 $ do
+    evaluate $ rnf1 $ (Case4b (SeqSet 0) (SeqSet 1) :: Case4 SeqSet)
+
+case_4_3b = testCase "Case4.3b" $ withSeqState (bit 55) $ do
+    evaluate $ rnf1 $ (Case4b SeqIgnore (SeqSet 55) :: Case4 SeqSet)
+
+case_4_4b = testCase "Case4.4b" $ withSeqState 0xffffffffffffffff $ do
+    evaluate $ rnf1 $ (genCase 63)
+  where
+    genCase n | n > 1      = Case4c (SeqSet n) (genCase (n-1))
+              | otherwise  = Case4b (SeqSet 0) (SeqSet 1)
+#endif
+
 ----------------------------------------------------------------------------
 
 main :: IO ()
 main = defaultMain [tests]
   where
-    tests = testGroup "" [case_1, case_2, case_3, case_4_1, case_4_2, case_4_3, case_4_4]
+    tests = testGroup ""
+        [ case_1, case_2, case_3
+        , case_4_1, case_4_2, case_4_3, case_4_4
+#if __GLASGOW_HASKELL__ >= 706
+        , case_4_1b, case_4_2b, case_4_3b, case_4_4b
+#endif
+        ]

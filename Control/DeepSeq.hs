@@ -3,6 +3,9 @@
 #if __GLASGOW_HASKELL__ >= 702
 {-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeOperators #-}
 # if MIN_VERSION_array(0,4,0)
 {-# LANGUAGE Safe #-}
@@ -115,35 +118,51 @@ import GHC.Fingerprint.Type ( Fingerprint(..) )
 import GHC.Generics
 
 -- | Hidden internal type-class
-class GNFData f where
-  grnf :: f a -> ()
+class GNFData arity f where
+  grnf :: RnfArgs arity a -> f a -> ()
 
-instance GNFData V1 where
+instance GNFData arity V1 where
 #if __GLASGOW_HASKELL__ >= 708
-  grnf x = case x of {}
+  grnf _ x = case x of {}
 #else
-  grnf !_ = error "Control.DeepSeq.rnf: uninhabited type"
+  grnf _ !_ = error "Control.DeepSeq.rnf: uninhabited type"
 #endif
 
-instance GNFData U1 where
-  grnf U1 = ()
+data Zero
+data One
 
-instance NFData a => GNFData (K1 i a) where
-  grnf = rnf . unK1
+data RnfArgs arity a where
+  RnfArgs0 :: RnfArgs Zero a
+  RnfArgs1  :: (a -> ()) -> RnfArgs One a
+
+instance GNFData arity U1 where
+  grnf _ U1 = ()
+
+instance NFData a => GNFData arity (K1 i a) where
+  grnf _ = rnf . unK1
   {-# INLINEABLE grnf #-}
 
-instance GNFData a => GNFData (M1 i c a) where
-  grnf = grnf . unM1
+instance GNFData arity a => GNFData arity (M1 i c a) where
+  grnf args = grnf args . unM1
   {-# INLINEABLE grnf #-}
 
-instance (GNFData a, GNFData b) => GNFData (a :*: b) where
-  grnf (x :*: y) = grnf x `seq` grnf y
+instance (GNFData arity a, GNFData arity b) => GNFData arity (a :*: b) where
+  grnf args (x :*: y) = grnf args x `seq` grnf args y
   {-# INLINEABLE grnf #-}
 
-instance (GNFData a, GNFData b) => GNFData (a :+: b) where
-  grnf (L1 x) = grnf x
-  grnf (R1 x) = grnf x
+instance (GNFData arity a, GNFData arity b) => GNFData arity (a :+: b) where
+  grnf args (L1 x) = grnf args x
+  grnf args (R1 x) = grnf args x
   {-# INLINEABLE grnf #-}
+
+instance GNFData One Par1 where
+    grnf (RnfArgs1 r) = r . unPar1
+
+instance NFData1 f => GNFData One (Rec1 f) where
+    grnf (RnfArgs1 r) = liftRnf r . unRec1
+
+instance (NFData1 f, GNFData One g) => GNFData One (f :.: g) where
+    grnf args = liftRnf (grnf args) . unComp1
 #endif
 
 infixr 0 $!!
@@ -301,8 +320,8 @@ class NFData a where
     rnf :: a -> ()
 
 #if __GLASGOW_HASKELL__ >= 702
-    default rnf :: (Generic a, GNFData (Rep a)) => a -> ()
-    rnf = grnf . from
+    default rnf :: (Generic a, GNFData Zero (Rep a)) => a -> ()
+    rnf = grnf RnfArgs0 . from
 #endif
 
 
@@ -311,6 +330,11 @@ class NFData a where
 -- @since 1.4.3.0
 class NFData1 f where
     liftRnf :: (a -> ()) -> f a -> ()
+
+#if __GLASGOW_HASKELL__ >= 702
+    default liftRnf :: (Generic1 f, GNFData One (Rep1 f)) => (a -> ()) -> f a -> ()
+    liftRnf r = grnf (RnfArgs1 r) . from1
+#endif
 
 rnf1 :: (NFData1 f, NFData a) => f a -> ()
 rnf1 = liftRnf rnf
