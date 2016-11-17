@@ -8,6 +8,10 @@
     the argument is a diverging computation, a generic `rnf` implementation
     will actually trigger the diverging computation.
     ([#19](https://github.com/haskell/deepseq/issues/19))
+  * Add `rwhnf !_ = ()` ([#3](https://github.com/haskell/deepseq/issues/3))
+  * Add `(<$!!>) :: (Monad m, NFData b) => (a -> b) -> m a -> m b`
+    ([#13](https://github.com/haskell/deepseq/issues/13))
+  * Add `NFData Ordering` ([#25](https://github.com/haskell/deepseq/pull/25))
 
 ## 1.4.2.0  *Apr 2016*
 
