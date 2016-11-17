@@ -12,6 +12,7 @@
   * Add `(<$!!>) :: (Monad m, NFData b) => (a -> b) -> m a -> m b`
     ([#13](https://github.com/haskell/deepseq/issues/13))
   * Add `NFData Ordering` ([#25](https://github.com/haskell/deepseq/pull/25))
+  * Add `NFData1` and `NFData2` type classes ([#8](https://github.com/haskell/deepseq/issues/8))
 
 ## 1.4.2.0  *Apr 2016*
 
