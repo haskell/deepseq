@@ -263,15 +263,18 @@ class NFData a where
     -- Starting with GHC 7.2, you can automatically derive instances
     -- for types possessing a 'Generic' instance.
     --
+    -- Note: 'Generic1' can be auto-derived starting with GHC 7.4
+    --
     -- > {-# LANGUAGE DeriveGeneric #-}
     -- >
-    -- > import GHC.Generics (Generic)
+    -- > import GHC.Generics (Generic, Generic1)
     -- > import Control.DeepSeq
     -- >
     -- > data Foo a = Foo a String
-    -- >              deriving (Eq, Generic)
+    -- >              deriving (Eq, Generic, Generic1)
     -- >
     -- > instance NFData a => NFData (Foo a)
+    -- > instance NFData1 Foo
     -- >
     -- > data Colour = Red | Green | Blue
     -- >               deriving Generic
@@ -287,7 +290,7 @@ class NFData a where
     -- > import Control.DeepSeq
     -- >
     -- > data Foo a = Foo a String
-    -- >              deriving (Eq, Generic, NFData)
+    -- >              deriving (Eq, Generic, Generic1, NFData, NFData1)
     -- >
     -- > data Colour = Red | Green | Blue
     -- >               deriving (Generic, NFData)
@@ -327,8 +330,15 @@ class NFData a where
 
 -- | A class of functors that can be fully evaluated.
 --
+--
+--
 -- @since 1.4.3.0
 class NFData1 f where
+    -- | 'liftRnf' should reduce its argument to normal form (that is, fully
+    -- evaluate all sub-components), given an argument to reduce @a@ arguments,
+    -- and then return '()'.
+    --
+    -- See 'rnf' for the generic deriving.
     liftRnf :: (a -> ()) -> f a -> ()
 
 #if __GLASGOW_HASKELL__ >= 702
