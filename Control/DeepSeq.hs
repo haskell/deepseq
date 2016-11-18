@@ -483,12 +483,29 @@ instance NFData a => NFData1 (Const a) where
 instance NFData2 Const where
     liftRnf2 r _ = r . getConst
 
+-- We should use MIN_VERSION array(0,5,1,1) but that's not possible.
+-- There isn't an underscore to not break C preprocessor
 #if __GLASGOW_HASKELL__ >= 711
 instance (NFData a, NFData b) => NFData (Array a b) where
 #else
 instance (Ix a, NFData a, NFData b) => NFData (Array a b) where
 #endif
     rnf x = rnf (bounds x, Data.Array.elems x)
+
+#if __GLASGOW_HASKELL__ >= 711
+-- |@since 1.4.3.0
+instance (NFData a) => NFData1 (Array a) where
+#else
+-- |@since 1.4.3.0
+instance (Ix a, NFData a) => NFData1 (Array a) where
+#endif
+    liftRnf r x = rnf (bounds x) `seq` liftRnf r (Data.Array.elems x)
+
+#if __GLASGOW_HASKELL__ >= 711
+-- |@since 1.4.3.0
+instance NFData2 Array where
+    liftRnf2 r r' x = liftRnf2 r r (bounds x) `seq` liftRnf r' (Data.Array.elems x)
+#endif
 
 #if MIN_VERSION_base(4,6,0)
 -- |@since 1.4.0.0
