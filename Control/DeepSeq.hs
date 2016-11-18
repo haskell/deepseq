@@ -330,8 +330,6 @@ class NFData a where
 
 -- | A class of functors that can be fully evaluated.
 --
---
---
 -- @since 1.4.3.0
 class NFData1 f where
     -- | 'liftRnf' should reduce its argument to normal form (that is, fully
@@ -346,6 +344,7 @@ class NFData1 f where
     liftRnf r = grnf (RnfArgs1 r) . from1
 #endif
 
+-- |@since 1.4.3.0
 rnf1 :: (NFData1 f, NFData a) => f a -> ()
 rnf1 = liftRnf rnf
 
@@ -355,6 +354,7 @@ rnf1 = liftRnf rnf
 class NFData2 p where
     liftRnf2 :: (a -> ()) -> (b -> ()) -> p a b -> ()
 
+-- |@since 1.4.3.0
 rnf2 :: (NFData2 p, NFData a, NFData b) => p a b -> ()
 rnf2 = liftRnf2 rnf rnf
 
@@ -383,6 +383,7 @@ instance NFData Word64   where rnf = rwhnf
 #if MIN_VERSION_base(4,7,0)
 -- |@since 1.4.0.0
 instance NFData (Proxy a) where rnf Proxy = ()
+-- |@since 1.4.3.0
 instance NFData1 Proxy    where liftRnf _ Proxy = ()
 #endif
 
@@ -391,6 +392,7 @@ instance NFData1 Proxy    where liftRnf _ Proxy = ()
 instance NFData a => NFData (Identity a) where
     rnf = rnf1
 
+-- |@since 1.4.3.0
 instance NFData1 Identity where
     liftRnf r = r . runIdentity
 
@@ -406,6 +408,7 @@ instance NFData Natural  where rnf = rwhnf
 
 -- |@since 1.3.0.0
 instance NFData (Fixed a) where rnf = rwhnf
+-- |@since 1.4.3.0
 instance NFData1 Fixed where liftRnf _ = rwhnf
 
 -- |This instance is for convenience and consistency with 'seq'.
@@ -418,6 +421,8 @@ instance NFData (a -> b) where rnf = rwhnf
 
 #if MIN_VERSION_base(4,9,0)
 -- | Available on @base >=4.9@
+--
+-- @since 1.4.3.0
 instance NFData1 Ratio where
   liftRnf r x = r (numerator x) `seq` r (denominator x)
 
@@ -437,12 +442,15 @@ instance (RealFloat a, NFData a) => NFData (Complex a) where
                ()
 
 instance NFData a => NFData (Maybe a) where rnf = rnf1
+-- |@since 1.4.3.0
 instance NFData1 Maybe where
     liftRnf _r Nothing  = ()
     liftRnf  r (Just x) = r x
 
 instance (NFData a, NFData b) => NFData (Either a b) where rnf = rnf1
+-- |@since 1.4.3.0
 instance (NFData a) => NFData1 (Either a) where liftRnf = liftRnf2 rnf
+-- |@since 1.4.3.0
 instance NFData2 Either where
     liftRnf2  l _r (Left x)  = l x
     liftRnf2 _l  r (Right y) = r y
@@ -452,6 +460,7 @@ instance NFData Data.Version.Version where
     rnf (Data.Version.Version branch tags) = rnf branch `seq` rnf tags
 
 instance NFData a => NFData [a] where rnf = rnf1
+-- |@since 1.4.3.0
 instance NFData1 [] where
     liftRnf r = go
       where
@@ -460,14 +469,17 @@ instance NFData1 [] where
 
 -- |@since 1.4.0.0
 instance NFData a => NFData (ZipList a) where rnf = rnf1
+-- |@since 1.4.3.0
 instance NFData1 ZipList where
     liftRnf r = liftRnf r . getZipList
 
 -- |@since 1.4.0.0
 instance NFData a => NFData (Const a b) where
     rnf = rnf . getConst
+-- |@since 1.4.3.0
 instance NFData a => NFData1 (Const a) where
     liftRnf _ = rnf . getConst
+-- |@since 1.4.3.0
 instance NFData2 Const where
     liftRnf2 r _ = r . getConst
 
@@ -481,22 +493,26 @@ instance (Ix a, NFData a, NFData b) => NFData (Array a b) where
 #if MIN_VERSION_base(4,6,0)
 -- |@since 1.4.0.0
 instance NFData a => NFData (Down a) where rnf = rnf1
+-- |@since 1.4.3.0
 instance NFData1 Down where
     liftRnf r (Down x) = r x
 #endif
 
 -- |@since 1.4.0.0
 instance NFData a => NFData (Dual a) where rnf = rnf1
+-- |@since 1.4.3.0
 instance NFData1 Dual where
     liftRnf r (Dual x) = r x
 
 -- |@since 1.4.0.0
 instance NFData a => NFData (Mon.First a) where rnf = rnf1
+-- |@since 1.4.3.0
 instance NFData1 Mon.First  where
     liftRnf r (Mon.First x) = liftRnf r x
 
 -- |@since 1.4.0.0
 instance NFData a => NFData (Mon.Last a) where rnf = rnf1
+-- |@since 1.4.3.0
 instance NFData1 Mon.Last  where
     liftRnf r (Mon.Last  x) = liftRnf r x
 
@@ -508,11 +524,13 @@ instance NFData All where rnf = rnf . getAll
 
 -- |@since 1.4.0.0
 instance NFData a => NFData (Sum a) where rnf = rnf1
+-- |@since 1.4.3.0
 instance NFData1 Sum where
     liftRnf r (Sum x) = r x
 
 -- |@since 1.4.0.0
 instance NFData a => NFData (Product a) where rnf = rnf1
+-- |@since 1.4.3.0
 instance NFData1 Product where
     liftRnf r (Product x) = r x
 
@@ -685,42 +703,51 @@ instance NFData ExitCode where
 #if MIN_VERSION_base(4,9,0)
 -- |@since 1.4.2.0
 instance NFData a => NFData (NonEmpty a) where rnf = rnf1
+-- |@since 1.4.3.0
 instance NFData1 NonEmpty where
   liftRnf r (x :| xs) = r x `seq` liftRnf r xs
 
 -- |@since 1.4.2.0
 instance NFData a => NFData (Min a) where rnf = rnf1
+-- |@since 1.4.3.0
 instance NFData1 Min where
   liftRnf r (Min a) = r a
 
 -- |@since 1.4.2.0
 instance NFData a => NFData (Max a) where rnf = rnf1
+-- |@since 1.4.3.0
 instance NFData1 Max where
   liftRnf r (Max a) = r a
 
 -- |@since 1.4.2.0
 instance (NFData a, NFData b) => NFData (Arg a b) where rnf = rnf2
+-- |@since 1.4.3.0
 instance (NFData a) => NFData1 (Arg a) where liftRnf = liftRnf2 rnf
+-- |@since 1.4.3.0
 instance NFData2 Arg where
   liftRnf2 r r' (Arg a b) = r a `seq` r' b `seq` ()
 
 -- |@since 1.4.2.0
 instance NFData a => NFData (Semi.First a) where rnf = rnf1
+-- |@since 1.4.3.0
 instance NFData1 Semi.First where
   liftRnf r (Semi.First a) = r a
 
 -- |@since 1.4.2.0
 instance NFData a => NFData (Semi.Last a) where rnf = rnf1
+-- |@since 1.4.3.0
 instance NFData1 Semi.Last where
   liftRnf r (Semi.Last a) = r a
 
 -- |@since 1.4.2.0
 instance NFData m => NFData (WrappedMonoid m) where rnf = rnf1
+-- |@since 1.4.3.0
 instance NFData1 WrappedMonoid where
   liftRnf r (WrapMonoid a) = r a
 
 -- |@since 1.4.2.0
 instance NFData a => NFData (Option a) where rnf = rnf1
+-- |@since 1.4.3.0
 instance NFData1 Option where
   liftRnf r (Option a) = liftRnf r a
 #endif
@@ -761,63 +788,79 @@ instance NFData CallStack where
 -- Tuples
 
 instance (NFData a, NFData b) => NFData (a,b) where rnf = rnf2
+-- |@since 1.4.3.0
 instance (NFData a) => NFData1 ((,) a) where liftRnf = liftRnf2 rnf
+-- |@since 1.4.3.0
 instance NFData2 (,) where
   liftRnf2 r r' (x,y) = r x `seq` r' y
 
 -- Code below is generated, see generate-nfdata-tuple.hs
 instance (NFData a1, NFData a2, NFData a3) =>
          NFData (a1, a2, a3) where rnf = rnf2
+-- |@since 1.4.3.0
 instance (NFData a1, NFData a2) =>
          NFData1 ((,,) a1 a2) where liftRnf = liftRnf2 rnf
+-- |@since 1.4.3.0
 instance (NFData a1) =>
          NFData2 ((,,) a1) where
   liftRnf2 r r' (x1,x2,x3) = rnf x1 `seq` r x2 `seq` r' x3
 
 instance (NFData a1, NFData a2, NFData a3, NFData a4) =>
          NFData (a1, a2, a3, a4) where rnf = rnf2
+-- |@since 1.4.3.0
 instance (NFData a1, NFData a2, NFData a3) =>
          NFData1 ((,,,) a1 a2 a3) where liftRnf = liftRnf2 rnf
+-- |@since 1.4.3.0
 instance (NFData a1, NFData a2) =>
          NFData2 ((,,,) a1 a2) where
   liftRnf2 r r' (x1,x2,x3,x4) = rnf x1 `seq` rnf x2 `seq` r x3 `seq` r' x4
 
 instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5) =>
          NFData (a1, a2, a3, a4, a5) where rnf = rnf2
+-- |@since 1.4.3.0
 instance (NFData a1, NFData a2, NFData a3, NFData a4) =>
          NFData1 ((,,,,) a1 a2 a3 a4) where liftRnf = liftRnf2 rnf
+-- |@since 1.4.3.0
 instance (NFData a1, NFData a2, NFData a3) =>
          NFData2 ((,,,,) a1 a2 a3) where
   liftRnf2 r r' (x1,x2,x3,x4,x5) = rnf x1 `seq` rnf x2 `seq` rnf x3 `seq` r x4 `seq` r' x5
 
 instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5, NFData a6) =>
          NFData (a1, a2, a3, a4, a5, a6) where rnf = rnf2
+-- |@since 1.4.3.0
 instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5) =>
          NFData1 ((,,,,,) a1 a2 a3 a4 a5) where liftRnf = liftRnf2 rnf
+-- |@since 1.4.3.0
 instance (NFData a1, NFData a2, NFData a3, NFData a4) =>
          NFData2 ((,,,,,) a1 a2 a3 a4) where
   liftRnf2 r r' (x1,x2,x3,x4,x5,x6) = rnf x1 `seq` rnf x2 `seq` rnf x3 `seq` rnf x4 `seq` r x5 `seq` r' x6
 
 instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5, NFData a6, NFData a7) =>
          NFData (a1, a2, a3, a4, a5, a6, a7) where rnf = rnf2
+-- |@since 1.4.3.0
 instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5, NFData a6) =>
          NFData1 ((,,,,,,) a1 a2 a3 a4 a5 a6) where liftRnf = liftRnf2 rnf
+-- |@since 1.4.3.0
 instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5) =>
          NFData2 ((,,,,,,) a1 a2 a3 a4 a5) where
   liftRnf2 r r' (x1,x2,x3,x4,x5,x6,x7) = rnf x1 `seq` rnf x2 `seq` rnf x3 `seq` rnf x4 `seq` rnf x5 `seq` r x6 `seq` r' x7
 
 instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5, NFData a6, NFData a7, NFData a8) =>
          NFData (a1, a2, a3, a4, a5, a6, a7, a8) where rnf = rnf2
+-- |@since 1.4.3.0
 instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5, NFData a6, NFData a7) =>
          NFData1 ((,,,,,,,) a1 a2 a3 a4 a5 a6 a7) where liftRnf = liftRnf2 rnf
+-- |@since 1.4.3.0
 instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5, NFData a6) =>
          NFData2 ((,,,,,,,) a1 a2 a3 a4 a5 a6) where
   liftRnf2 r r' (x1,x2,x3,x4,x5,x6,x7,x8) = rnf x1 `seq` rnf x2 `seq` rnf x3 `seq` rnf x4 `seq` rnf x5 `seq` rnf x6 `seq` r x7 `seq` r' x8
 
 instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5, NFData a6, NFData a7, NFData a8, NFData a9) =>
          NFData (a1, a2, a3, a4, a5, a6, a7, a8, a9) where rnf = rnf2
+-- |@since 1.4.3.0
 instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5, NFData a6, NFData a7, NFData a8) =>
          NFData1 ((,,,,,,,,) a1 a2 a3 a4 a5 a6 a7 a8) where liftRnf = liftRnf2 rnf
+-- |@since 1.4.3.0
 instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5, NFData a6, NFData a7) =>
          NFData2 ((,,,,,,,,) a1 a2 a3 a4 a5 a6 a7) where
   liftRnf2 r r' (x1,x2,x3,x4,x5,x6,x7,x8,x9) = rnf x1 `seq` rnf x2 `seq` rnf x3 `seq` rnf x4 `seq` rnf x5 `seq` rnf x6 `seq` rnf x7 `seq` r x8 `seq` r' x9
