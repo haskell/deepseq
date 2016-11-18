@@ -554,6 +554,9 @@ instance NFData1 Product where
 -- |@since 1.4.0.0
 instance NFData (StableName a) where
     rnf = rwhnf -- assumes `data StableName a = StableName (StableName# a)`
+-- |@since 1.4.3.0
+instance NFData1 StableName where
+    liftRnf _ = rwhnf
 
 -- |@since 1.4.0.0
 instance NFData ThreadId where
@@ -581,19 +584,31 @@ instance NFData TyCon where
 --
 -- @since 1.4.2.0
 instance NFData (IORef a) where
-  rnf = rwhnf
+    rnf = rwhnf
+-- |@since 1.4.3.0
+instance NFData1 IORef where
+    liftRnf _ = rwhnf
 
 -- | __NOTE__: Only strict in the reference and not the referenced value.
 --
 -- @since 1.4.2.0
 instance NFData (STRef s a) where
-  rnf = rwhnf
+    rnf = rwhnf
+-- |@since 1.4.3.0
+instance NFData1 (STRef s) where
+    liftRnf _ = rwhnf
+-- |@since 1.4.3.0
+instance NFData2 STRef where
+    liftRnf2 _ _ = rwhnf
 
 -- | __NOTE__: Only strict in the reference and not the referenced value.
 --
 -- @since 1.4.2.0
 instance NFData (MVar a) where
   rnf = rwhnf
+-- |@since 1.4.3.0
+instance NFData1 MVar where
+    liftRnf _ = rwhnf
 
 ----------------------------------------------------------------------------
 -- GHC Specifics
@@ -608,10 +623,18 @@ instance NFData Fingerprint where
 -- Foreign.Ptr
 
 -- |@since 1.4.2.0
-instance NFData (Ptr a) where rnf = rwhnf
+instance NFData (Ptr a) where
+    rnf = rwhnf
+-- |@since 1.4.3.0
+instance NFData1 Ptr where
+    liftRnf _ = rwhnf
 
 -- |@since 1.4.2.0
-instance NFData (FunPtr a) where rnf = rwhnf
+instance NFData (FunPtr a) where
+    rnf = rwhnf
+-- |@since 1.4.3.0
+instance NFData1 FunPtr where
+    liftRnf _ = rwhnf
 
 ----------------------------------------------------------------------------
 -- Foreign.C.Types
