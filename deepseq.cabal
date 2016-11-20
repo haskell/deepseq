@@ -45,7 +45,10 @@ library
     -- Enable Generics-backed DefaultSignatures for `rnf`
     other-extensions:
       DefaultSignatures
+      GADTs
       FlexibleContexts
+      FlexibleInstances 
+      MultiParamTypeClasses
       Safe
       TypeOperators
 
