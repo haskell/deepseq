@@ -108,6 +108,7 @@ import Data.Semigroup as Semi
 
 #if MIN_VERSION_base(4,9,0)
 import GHC.Stack.Types ( CallStack(..), SrcLoc(..) )
+import Data.Functor.Compose
 #elif MIN_VERSION_base(4,8,1)
 import GHC.Stack ( CallStack(..) )
 import GHC.SrcLoc ( SrcLoc(..) )
@@ -426,7 +427,14 @@ instance NFData (a -> b) where rnf = rwhnf
 instance NFData1 Ratio where
   liftRnf r x = r (numerator x) `seq` r (denominator x)
 
+-- | @since 1.4.3.0
+instance (NFData1 f, NFData1 g) => NFData1(Compose f g) where liftRnf r = liftRnf (liftRnf r) . getCompose
+
+-- | @since 1.4.3.0
+instance (NFData1 f, NFData1 g, NFData a) => NFData (Compose f g a) where rnf = rnf1
+
 instance NFData a => NFData (Ratio a) where
+
 #else
 instance (Integral a, NFData a) => NFData (Ratio a) where
 #endif
