@@ -13,7 +13,8 @@
     ([#13](https://github.com/haskell/deepseq/issues/13))
   * Add `NFData Ordering` ([#25](https://github.com/haskell/deepseq/pull/25))
   * Add `NFData1` and `NFData2` type classes ([#8](https://github.com/haskell/deepseq/issues/8))
-  * Add `NFData1` and `NFData` instances for Compose
+  * Add `NFData1` and `NFData` instances for `Data.Functor.{Compose,Sum,Product}`
+    ([#30](https://github.com/haskell/deepseq/pull/30))
 
 ## 1.4.2.0  *Apr 2016*
 
