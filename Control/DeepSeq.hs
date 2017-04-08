@@ -109,6 +109,8 @@ import Data.Semigroup as Semi
 #if MIN_VERSION_base(4,9,0)
 import GHC.Stack.Types ( CallStack(..), SrcLoc(..) )
 import Data.Functor.Compose
+import qualified Data.Functor.Sum as Functor
+import qualified Data.Functor.Product as Functor
 #elif MIN_VERSION_base(4,8,1)
 import GHC.Stack ( CallStack(..) )
 import GHC.SrcLoc ( SrcLoc(..) )
@@ -432,6 +434,21 @@ instance (NFData1 f, NFData1 g) => NFData1(Compose f g) where liftRnf r = liftRn
 
 -- | @since 1.4.3.0
 instance (NFData1 f, NFData1 g, NFData a) => NFData (Compose f g a) where rnf = rnf1
+
+-- | @since 1.4.3.0
+instance (NFData1 f, NFData1 g) => NFData1(Functor.Sum f g) where
+  liftRnf rnf0 (Functor.InL l) = liftRnf rnf0 l
+  liftRnf rnf0 (Functor.InR r) = liftRnf rnf0 r
+
+-- | @since 1.4.3.0
+instance (NFData1 f, NFData1 g, NFData a) => NFData(Functor.Sum f g a) where rnf = rnf1
+
+-- | @since 1.4.3.0
+instance (NFData1 f, NFData1 g) => NFData1(Functor.Product f g) where
+  liftRnf rnf0 (Functor.Pair f g) = liftRnf rnf0 f `seq` liftRnf rnf0 g
+
+-- | @since 1.4.3.0
+instance (NFData1 f, NFData1 g, NFData a) => NFData(Functor.Product f g a) where rnf = rnf1
 
 instance NFData a => NFData (Ratio a) where
 
