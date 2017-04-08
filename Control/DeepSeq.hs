@@ -757,6 +757,11 @@ instance NFData CFpos where rnf = rwhnf
 -- |@since 1.4.0.0
 instance NFData CJmpBuf where rnf = rwhnf
 
+#if MIN_VERSION_base(4,10,0)
+-- | @since 1.4.3.0
+instance NFData CBool where rnf = rwhnf
+#endif
+
 ----------------------------------------------------------------------------
 -- System.Exit
 
