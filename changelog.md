@@ -15,6 +15,7 @@
   * Add `NFData1` and `NFData2` type classes ([#8](https://github.com/haskell/deepseq/issues/8))
   * Add `NFData1` and `NFData` instances for `Data.Functor.{Compose,Sum,Product}`
     ([#30](https://github.com/haskell/deepseq/pull/30))
+  * Add `NFData` instance for `Foreign.C.Types.CBool`
 
 ## 1.4.2.0  *Apr 2016*
 
