@@ -1,22 +1,21 @@
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE CPP #-}
-#if __GLASGOW_HASKELL__ >= 702
 {-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TypeOperators #-}
-# if MIN_VERSION_array(0,4,0)
 {-# LANGUAGE Safe #-}
-# endif
-#endif
+{-# LANGUAGE TypeOperators #-}
+
 #if __GLASGOW_HASKELL__ >= 706
 {-# LANGUAGE PolyKinds #-}
 #endif
+
 #if __GLASGOW_HASKELL__ >= 708
 {-# LANGUAGE EmptyCase #-}
 #endif
+
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Control.DeepSeq
@@ -116,7 +115,6 @@ import GHC.Stack ( CallStack(..) )
 import GHC.SrcLoc ( SrcLoc(..) )
 #endif
 
-#if __GLASGOW_HASKELL__ >= 702
 import GHC.Fingerprint.Type ( Fingerprint(..) )
 import GHC.Generics
 
@@ -166,7 +164,6 @@ instance NFData1 f => GNFData One (Rec1 f) where
 
 instance (NFData1 f, GNFData One g) => GNFData One (f :.: g) where
     grnf args = liftRnf (grnf args) . unComp1
-#endif
 
 infixr 0 $!!
 
@@ -325,11 +322,8 @@ class NFData a where
     --
     rnf :: a -> ()
 
-#if __GLASGOW_HASKELL__ >= 702
     default rnf :: (Generic a, GNFData Zero (Rep a)) => a -> ()
     rnf = grnf RnfArgs0 . from
-#endif
-
 
 -- | A class of functors that can be fully evaluated.
 --
@@ -342,10 +336,8 @@ class NFData1 f where
     -- See 'rnf' for the generic deriving.
     liftRnf :: (a -> ()) -> f a -> ()
 
-#if __GLASGOW_HASKELL__ >= 702
     default liftRnf :: (Generic1 f, GNFData One (Rep1 f)) => (a -> ()) -> f a -> ()
     liftRnf r = grnf (RnfArgs1 r) . from1
-#endif
 
 -- |@since 1.4.3.0
 rnf1 :: (NFData1 f, NFData a) => f a -> ()
@@ -460,11 +452,7 @@ instance (Integral a, NFData a) => NFData (Ratio a) where
 #endif
   rnf x = rnf (numerator x, denominator x)
 
-#if MIN_VERSION_base(4,4,0)
 instance (NFData a) => NFData (Complex a) where
-#else
-instance (RealFloat a, NFData a) => NFData (Complex a) where
-#endif
   rnf (x:+y) = rnf x `seq`
                rnf y `seq`
                ()
@@ -641,11 +629,9 @@ instance NFData1 MVar where
 ----------------------------------------------------------------------------
 -- GHC Specifics
 
-#if __GLASGOW_HASKELL__ >= 702
 -- |@since 1.4.0.0
 instance NFData Fingerprint where
     rnf (Fingerprint _ _) = ()
-#endif
 
 ----------------------------------------------------------------------------
 -- Foreign.Ptr
@@ -730,13 +716,11 @@ instance NFData CClock where rnf = rwhnf
 -- |@since 1.4.0.0
 instance NFData CTime where rnf = rwhnf
 
-#if MIN_VERSION_base(4,4,0)
 -- |@since 1.4.0.0
 instance NFData CUSeconds where rnf = rwhnf
 
 -- |@since 1.4.0.0
 instance NFData CSUSeconds where rnf = rwhnf
-#endif
 
 -- |@since 1.4.0.0
 instance NFData CFloat where rnf = rwhnf

@@ -22,12 +22,12 @@ description:
     data types.
 build-type:     Simple
 cabal-version:  >=1.10
-tested-with:    GHC==8.0.1,
+tested-with:    GHC==8.2.1,
+                GHC==8.0.2, GHC==8.0.1,
                 GHC==7.10.3, GHC==7.10.2, GHC==7.10.1,
                 GHC==7.8.4, GHC==7.8.3, GHC==7.8.2, GHC==7.8.1,
                 GHC==7.6.3, GHC==7.6.2, GHC==7.6.1,
-                GHC==7.4.2, GHC==7.4.1, GHC==7.2.2, GHC==7.2.1,
-                GHC==7.0.4, GHC==7.0.3, GHC==7.0.2, GHC==7.0.1
+                GHC==7.4.2, GHC==7.4.1
 
 extra-source-files: changelog.md
 
@@ -41,30 +41,28 @@ library
     BangPatterns
     CPP
 
-  if impl(ghc>=7.2)
-    -- Enable Generics-backed DefaultSignatures for `rnf`
-    other-extensions:
-      DefaultSignatures
-      GADTs
-      FlexibleContexts
-      FlexibleInstances
-      MultiParamTypeClasses
-      Safe
-      TypeOperators
+  -- Enable Generics-backed DefaultSignatures for `rnf`
+  other-extensions:
+    DefaultSignatures
+    GADTs
+    FlexibleContexts
+    FlexibleInstances
+    MultiParamTypeClasses
+    Safe
+    TypeOperators
 
-    -- GHC.Generics lived in `ghc-prim` for GHC 7.2 & GHC 7.4
-    if impl(ghc < 7.6)
-      build-depends: ghc-prim == 0.2.*
+  -- GHC.Generics lived in `ghc-prim` for GHC 7.2 & GHC 7.4
+  if impl(ghc == 7.4.*)
+    build-depends: ghc-prim == 0.2.*
+
+  if impl(ghc>=7.6)
+    other-extensions: PolyKinds
 
   if impl(ghc>=7.8)
-    other-extensions:
-      EmptyCase
+    other-extensions: EmptyCase
 
-  if impl(ghc < 7.4)
-    build-depends: array < 0.4
-
-  build-depends: base       >= 4.3 && < 4.11,
-                 array      >= 0.3 && < 0.6
+  build-depends: base       >= 4.5 && < 4.11,
+                 array      >= 0.4 && < 0.6
   ghc-options: -Wall
 
   exposed-modules: Control.DeepSeq

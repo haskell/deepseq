@@ -16,6 +16,7 @@
   * Add `NFData1` and `NFData` instances for `Data.Functor.{Compose,Sum,Product}`
     ([#30](https://github.com/haskell/deepseq/pull/30))
   * Add `NFData` instance for `Foreign.C.Types.CBool`
+  * Drop support for GHC 7.0 & GHC 7.2
 
 ## 1.4.2.0  *Apr 2016*
 
