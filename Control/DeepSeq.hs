@@ -95,6 +95,12 @@ import Control.DeepSeq.BackDoor ( Down(Down) )
 import Data.Proxy ( Proxy(Proxy) )
 #endif
 
+#if MIN_VERSION_base(4,10,0)
+import Data.Type.Equality ( (:~:), (:~~:) )
+#elif MIN_VERSION_base(4,7,0)
+import Control.DeepSeq.BackDoor ( (:~:) )
+#endif
+
 #if MIN_VERSION_base(4,8,0)
 import Data.Functor.Identity ( Identity(..) )
 import Data.Typeable ( TypeRep, TyCon, rnfTypeRep, rnfTyCon )
@@ -382,6 +388,22 @@ instance NFData Word64   where rnf = rwhnf
 instance NFData (Proxy a) where rnf Proxy = ()
 -- |@since 1.4.3.0
 instance NFData1 Proxy    where liftRnf _ Proxy = ()
+
+-- | @since 1.4.3.0
+instance NFData (a :~: b) where rnf = rwhnf
+-- | @since 1.4.3.0
+instance NFData1 ((:~:) a) where liftRnf _ = rwhnf
+-- | @since 1.4.3.0
+instance NFData2 (:~:) where liftRnf2 _ _ = rwhnf
+#endif
+
+#if MIN_VERSION_base(4,10,0)
+-- | @since 1.4.3.0
+instance NFData (a :~~: b) where rnf = rwhnf
+-- | @since 1.4.3.0
+instance NFData1 ((:~~:) a) where liftRnf _ = rwhnf
+-- | @since 1.4.3.0
+instance NFData2 (:~~:) where liftRnf2 _ _ = rwhnf
 #endif
 
 #if MIN_VERSION_base(4,8,0)
