@@ -6,11 +6,12 @@
 
   * Drop support for GHC 7.0 & GHC 7.2
 
-  * Changed behavior of generic `NFData` instances for constructor-less data
-    types. Before, a generic `rnf` implementation would always `error` on a
-    data type with no constructors. Now, it will force the argument, so if
-    the argument is a diverging computation, a generic `rnf` implementation
-    will actually trigger the diverging computation.
+  * Changed strictness behavior of generic `NFData` instances for
+    constructor-less data types. Before, a generic `rnf`
+    implementation would always `error` on a data type with no
+    constructors. Now, it will force the argument, so if the argument
+    is a diverging computation, a generic `rnf` implementation will
+    actually trigger the diverging computation.
     ([#19](https://github.com/haskell/deepseq/issues/19))
 
   * Add new `rwhnf` function defined as `rwhnf !_ = ()`
@@ -23,7 +24,7 @@
     ([#8](https://github.com/haskell/deepseq/issues/8))
 
   * Add `NFData` instance for `Down` for `base` versions prior to
-    `base-4.6.0` which didn't yet export it it via `Data.Ord`
+    `base-4.6.0` which didn't yet export it via `Data.Ord`
     ([#28](https://github.com/haskell/deepseq/pull/28))
 
   * Add `NFData` instance for `Foreign.C.Types.CBool`
