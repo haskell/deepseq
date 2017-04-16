@@ -244,7 +244,14 @@ force x = x `deepseq` x
 --
 -- @since 1.4.3.0
 (<$!!>) :: (Monad m, NFData b) => (a -> b) -> m a -> m b
+#if MIN_VERSION_base(4,8,0)
+-- Minor optimisation for AMP; this avoids the redundant indirection
+-- through 'return' in case GHC isn't smart enough to optimise it away
+-- on its own
+f <$!!> m = m >>= \x -> pure $!! f x
+#else
 f <$!!> m = m >>= \x -> return $!! f x
+#endif
 infixl 4 <$!!>
 
 -- | Reduce to weak head normal form
