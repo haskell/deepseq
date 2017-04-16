@@ -1,6 +1,10 @@
 # Changelog for [`deepseq` package](http://hackage.haskell.org/package/deepseq)
 
-## 1.4.3.0 *TBD*
+## 1.4.3.0 *Apr 2017*
+
+  * Bundled with GHC 8.2.1
+
+  * Drop support for GHC 7.0 & GHC 7.2
 
   * Changed behavior of generic `NFData` instances for constructor-less data
     types. Before, a generic `rnf` implementation would always `error` on a
@@ -8,18 +12,32 @@
     the argument is a diverging computation, a generic `rnf` implementation
     will actually trigger the diverging computation.
     ([#19](https://github.com/haskell/deepseq/issues/19))
-  * Add `rwhnf !_ = ()` ([#3](https://github.com/haskell/deepseq/issues/3))
+
+  * Add new `rwhnf` function defined as `rwhnf !_ = ()`
+    ([#3](https://github.com/haskell/deepseq/issues/3))
+
   * Add `(<$!!>) :: (Monad m, NFData b) => (a -> b) -> m a -> m b`
     ([#13](https://github.com/haskell/deepseq/issues/13))
-  * Add `NFData Ordering` ([#25](https://github.com/haskell/deepseq/pull/25))
-  * Add `NFData1` and `NFData2` type classes ([#8](https://github.com/haskell/deepseq/issues/8))
+
+  * Add `NFData1` and `NFData2` type classes
+    ([#8](https://github.com/haskell/deepseq/issues/8))
+
+  * Add `NFData` instance for `Down` for `base` versions prior to
+    `base-4.6.0` which didn't yet export it it via `Data.Ord`
+    ([#28](https://github.com/haskell/deepseq/pull/28))
+
+  * Add `NFData` instance for `Foreign.C.Types.CBool`
+    ([#33](https://github.com/haskell/deepseq/pull/33))
+
+  * Add `NFData` instance for `Ordering`
+    ([#25](https://github.com/haskell/deepseq/pull/25))
+
   * Add `NFData1` and `NFData` instances for `Data.Functor.{Compose,Sum,Product}`
     ([#30](https://github.com/haskell/deepseq/pull/30))
+
   * Add `NFData`, `NFData1`, and `NFData2` instances for `(:~:)` and `(:~~:)`
-    from `Data.Type.Equality` ([#31](https://github.com/haskell/deepseq/issues/31))
-  * Add `NFData` instance for `Foreign.C.Types.CBool`
-  * Drop support for GHC 7.0 & GHC 7.2
-  * Expose `NFData` instance for `Down` on earlier versions of `base`
+    from `Data.Type.Equality`
+    ([#31](https://github.com/haskell/deepseq/issues/31))
 
 ## 1.4.2.0  *Apr 2016*
 
