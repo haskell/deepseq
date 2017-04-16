@@ -17,6 +17,7 @@
     ([#30](https://github.com/haskell/deepseq/pull/30))
   * Add `NFData` instance for `Foreign.C.Types.CBool`
   * Drop support for GHC 7.0 & GHC 7.2
+  * Expose `NFData` instance for `Down` on earlier versions of `base`
 
 ## 1.4.2.0  *Apr 2016*
 

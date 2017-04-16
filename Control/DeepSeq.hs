@@ -87,6 +87,8 @@ import System.Mem.StableName ( StableName )
 
 #if MIN_VERSION_base(4,6,0)
 import Data.Ord ( Down(Down) )
+#else
+import GHC.Exts ( Down(Down) )
 #endif
 
 #if MIN_VERSION_base(4,7,0)
@@ -523,13 +525,11 @@ instance NFData2 Array where
     liftRnf2 r r' x = liftRnf2 r r (bounds x) `seq` liftRnf r' (Data.Array.elems x)
 #endif
 
-#if MIN_VERSION_base(4,6,0)
 -- |@since 1.4.0.0
 instance NFData a => NFData (Down a) where rnf = rnf1
 -- |@since 1.4.3.0
 instance NFData1 Down where
     liftRnf r (Down x) = r x
-#endif
 
 -- |@since 1.4.0.0
 instance NFData a => NFData (Dual a) where rnf = rnf1
