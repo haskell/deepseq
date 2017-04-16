@@ -66,12 +66,10 @@ library
   ghc-options: -Wall
 
   exposed-modules: Control.DeepSeq
-
+  other-modules:   Control.DeepSeq.BackDoor
 
 test-suite deepseq-generics-tests
     default-language:    Haskell2010
-    if !impl(ghc>=7.2)
-        buildable: False
     type:                exitcode-stdio-1.0
     hs-source-dirs:      . tests
     main-is:             Main.hs

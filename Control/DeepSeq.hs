@@ -88,7 +88,7 @@ import System.Mem.StableName ( StableName )
 #if MIN_VERSION_base(4,6,0)
 import Data.Ord ( Down(Down) )
 #else
-import GHC.Exts ( Down(Down) )
+import Control.DeepSeq.BackDoor ( Down(Down) )
 #endif
 
 #if MIN_VERSION_base(4,7,0)
