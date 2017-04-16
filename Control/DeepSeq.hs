@@ -97,6 +97,8 @@ import Data.Proxy ( Proxy(Proxy) )
 
 #if MIN_VERSION_base(4,10,0)
 import Data.Type.Equality ( (:~:), (:~~:) )
+#elif MIN_VERSION_base(4,9,0)
+import Data.Type.Equality ( (:~:) )
 #elif MIN_VERSION_base(4,7,0)
 import Control.DeepSeq.BackDoor ( (:~:) )
 #endif
