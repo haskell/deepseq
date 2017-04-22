@@ -1,5 +1,10 @@
 {-# LANGUAGE CPP #-}
 
+-- | Hack to keep Control.DeepSeq SAFE-inferred
+--
+-- This module only re-export reasonably safe entities from non-safe
+-- modules when there is no safe alternative
+
 #if MIN_VERSION_base(4,9,0) || (MIN_VERSION_base(4,6,0) && !MIN_VERSION_base(4,7,0))
 {-# LANGUAGE Safe #-}
 
@@ -10,10 +15,6 @@ module Control.DeepSeq.BackDoor
 #else
 {-# LANGUAGE Trustworthy #-}
 
--- | Hack to keep Control.DeepSeq SAFE-inferred
---
--- This module only re-export reasonably safe entities from non-safe
--- modules when there is no safe alternative
 module Control.DeepSeq.BackDoor
     ( module X
     ) where

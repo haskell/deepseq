@@ -26,20 +26,28 @@
 -- Stability   :  stable
 -- Portability :  portable
 --
--- This module provides an overloaded function, 'deepseq', for fully
--- evaluating data structures (that is, evaluating to \"Normal Form\").
+-- This module provides overloaded functions, such as 'deepseq' and
+-- 'rnf', for fully evaluating data structures (that is, evaluating to
+-- \"Normal Form\").
 --
 -- A typical use is to prevent resource leaks in lazy IO programs, by
 -- forcing all characters from a file to be read. For example:
 --
 -- > import System.IO
 -- > import Control.DeepSeq
+-- > import Control.Exception (evaluate)
 -- >
--- > main = do
--- >     h <- openFile "f" ReadMode
+-- > readFile' :: FilePath -> IO String
+-- > readFile' fn = do
+-- >     h <- openFile fn ReadMode
 -- >     s <- hGetContents h
--- >     s `deepseq` hClose h
+-- >     evaluate (rnf s)
+-- >     hClose h
 -- >     return s
+--
+-- __Note__: The example above should rather be written in terms of
+-- 'Control.Exception.bracket' to ensure releasing file-descriptors in
+-- a timely matter (see the description of 'force' for an example).
 --
 -- 'deepseq' differs from 'seq' as it traverses data structures deeply,
 -- for example, 'seq' will evaluate only to the first constructor in
@@ -61,10 +69,20 @@
 --
 -- @since 1.1.0.0
 module Control.DeepSeq (
-     deepseq, ($!!), force, (<$!!>), rwhnf,
-     NFData(..),
-     NFData1(..), rnf1,
-     NFData2(..), rnf2
+     -- * 'NFData' class
+     NFData(rnf),
+     -- * Helper functions
+     deepseq,
+     force,
+     ($!!),
+     (<$!!>),
+     rwhnf,
+
+     -- * Liftings of the 'NFData' class
+     -- ** For unary constructors
+     NFData1(liftRnf), rnf1,
+     -- ** For binary constructors
+     NFData2(liftRnf2), rnf2,
   ) where
 
 import Control.Applicative
@@ -236,6 +254,12 @@ f $!! x = x `deepseq` f x
 -- >   {- 'result' will be fully evaluated at this point -}
 -- >   return ()
 --
+-- Finally, here's an exception safe variant of the @readFile'@ example:
+--
+-- > readFile' :: FilePath -> IO String
+-- > readFile' fn = bracket (openFile fn ReadMode) hClose $ \h ->
+-- >                        evaluate . force =<< hGetContents h
+--
 -- @since 1.2.0.0
 force :: (NFData a) => a -> a
 force x = x `deepseq` x
@@ -255,6 +279,8 @@ f <$!!> m = m >>= \x -> return $!! f x
 infixl 4 <$!!>
 
 -- | Reduce to weak head normal form
+--
+-- Equivalent to @\\x -> 'seq' x ()@.
 --
 -- Useful for defining 'NFData' for types for which NF=WHNF holds.
 --
@@ -356,7 +382,9 @@ class NFData1 f where
     default liftRnf :: (Generic1 f, GNFData One (Rep1 f)) => (a -> ()) -> f a -> ()
     liftRnf r = grnf (RnfArgs1 r) . from1
 
--- |@since 1.4.3.0
+-- | Lift the standard 'rnf' function through the type constructor.
+--
+-- @since 1.4.3.0
 rnf1 :: (NFData1 f, NFData a) => f a -> ()
 rnf1 = liftRnf rnf
 
@@ -364,9 +392,17 @@ rnf1 = liftRnf rnf
 --
 -- @since 1.4.3.0
 class NFData2 p where
+    -- | 'liftRnf2' should reduce its argument to normal form (that
+    -- is, fully evaluate all sub-components), given functions to
+    -- reduce @a@ and @b@ arguments respectively, and then return '()'.
+    --
+    -- __Note__: Unlike for the unary 'liftRnf', there is currently no
+    -- support for generically deriving 'liftRnf2'.
     liftRnf2 :: (a -> ()) -> (b -> ()) -> p a b -> ()
 
--- |@since 1.4.3.0
+-- | Lift the standard 'rnf' function through the type constructor.
+--
+-- @since 1.4.3.0
 rnf2 :: (NFData2 p, NFData a, NFData b) => p a b -> ()
 rnf2 = liftRnf2 rnf rnf
 
