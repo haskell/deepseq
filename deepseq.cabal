@@ -1,5 +1,5 @@
 name:           deepseq
-version:        1.4.3.0
+version:        1.4.4.0
 -- NOTE: Don't forget to update ./changelog.md
 license:        BSD3
 license-file:   LICENSE

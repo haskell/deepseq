@@ -429,6 +429,7 @@ instance NFData Word16   where rnf = rwhnf
 instance NFData Word32   where rnf = rwhnf
 instance NFData Word64   where rnf = rwhnf
 
+-- | @since 1.4.4.0
 instance NFData MaskingState where rnf = rwhnf
 
 #if MIN_VERSION_base(4,7,0)

@@ -1,5 +1,10 @@
 # Changelog for [`deepseq` package](http://hackage.haskell.org/package/deepseq)
 
+## 1.4.4.0 *TBD*
+
+  * Add `NFData` instance for `MaskingState`
+    ([#38](https://github.com/haskell/deepseq/pull/38))
+
 ## 1.4.3.0 *Apr 2017*
 
   * Bundled with GHC 8.2.1
