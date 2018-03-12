@@ -87,6 +87,7 @@ module Control.DeepSeq (
 
 import Control.Applicative
 import Control.Concurrent ( ThreadId, MVar )
+import Control.Exception ( MaskingState(..) )
 import Data.IORef
 import Data.STRef
 import Data.Int
@@ -427,6 +428,8 @@ instance NFData Word8    where rnf = rwhnf
 instance NFData Word16   where rnf = rwhnf
 instance NFData Word32   where rnf = rwhnf
 instance NFData Word64   where rnf = rwhnf
+
+instance NFData MaskingState where rnf = rwhnf
 
 #if MIN_VERSION_base(4,7,0)
 -- |@since 1.4.0.0
