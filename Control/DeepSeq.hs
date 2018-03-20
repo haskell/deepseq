@@ -98,6 +98,7 @@ import Data.Array
 import Data.Fixed
 import Data.Version
 import Data.Monoid as Mon
+import Data.Typeable ( TypeRep, TyCon )
 import Data.Unique ( Unique )
 import Foreign.Ptr
 import Foreign.C.Types
@@ -124,9 +125,11 @@ import Control.DeepSeq.BackDoor ( (:~:) )
 
 #if MIN_VERSION_base(4,8,0)
 import Data.Functor.Identity ( Identity(..) )
-import Data.Typeable ( TypeRep, TyCon, rnfTypeRep, rnfTyCon )
+import Data.Typeable ( rnfTypeRep, rnfTyCon )
 import Data.Void ( Void, absurd )
 import Numeric.Natural ( Natural )
+#else
+import Data.Typeable ( typeRepTyCon, typeRepArgs, tyConPackage, tyConModule, tyConName )
 #endif
 
 #if MIN_VERSION_base(4,9,0)
@@ -654,17 +657,23 @@ instance NFData Unique where
     rnf = rwhnf -- assumes `newtype Unique = Unique Integer`
 
 #if MIN_VERSION_base(4,8,0)
--- | __NOTE__: Only defined for @base-4.8.0.0@ and later
---
--- @since 1.4.0.0
+-- |@since 1.4.0.0
 instance NFData TypeRep where
     rnf tyrep = rnfTypeRep tyrep
 
--- | __NOTE__: Only defined for @base-4.8.0.0@ and later
---
--- @since 1.4.0.0
+-- |@since 1.4.0.0
 instance NFData TyCon where
     rnf tycon = rnfTyCon tycon
+#else
+-- |@since 1.4.0.0
+instance NFData TypeRep where
+    rnf tr = rnf (typeRepTyCon tr) `seq` rnf (typeRepArgs tr)
+
+-- |@since 1.4.0.0
+instance NFData TyCon where
+    rnf tc = rnf (tyConPackage tc) `seq`
+             rnf (tyConModule  tc) `seq`
+             rnf (tyConName    tc)
 #endif
 
 -- | __NOTE__: Only strict in the reference and not the referenced value.

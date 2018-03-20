@@ -5,6 +5,10 @@
   * Add `NFData` instance for `MaskingState`
     ([#38](https://github.com/haskell/deepseq/pull/38))
 
+  * Define the `NFData` instances for `TypeRep` and `TyCon` on all supported
+    versions of `base`, not just 4.8 and later
+    ([#40](https://github.com/haskell/deepseq/pull/40))
+
 ## 1.4.3.0 *Apr 2017*
 
   * Bundled with GHC 8.2.1
