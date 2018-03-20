@@ -83,7 +83,7 @@ install:
 # can't use "cabal install --only-dependencies --enable-tests" due to dep-cycle
  - if [ -n "$TEST_OPTS" ];
    then
-     cabal install 'test-framework == 0.8.*' 'test-framework-hunit == 0.3.*' 'HUnit >= 1.2 && < 1.6' --dry -v > installplan.txt;
+     cabal install 'test-framework == 0.8.*' 'test-framework-hunit == 0.3.*' 'HUnit >= 1.2 && < 1.7' --dry -v > installplan.txt;
    else
      cabal install --only-dependencies --dry -v > installplan.txt;
    fi
@@ -102,7 +102,7 @@ install:
      mkdir -p $HOME/.ghc $HOME/.cabal/lib $HOME/.cabal/share $HOME/.cabal/bin;
      if [ -n "$TEST_OPTS" ];
      then
-       cabal install -j 'test-framework == 0.8.*' 'test-framework-hunit == 0.3.*' 'HUnit >= 1.2 && < 1.6';
+       cabal install -j 'test-framework == 0.8.*' 'test-framework-hunit == 0.3.*' 'HUnit >= 1.2 && < 1.7';
      else
        cabal install -j --only-dependencies;
      fi
