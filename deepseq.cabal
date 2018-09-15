@@ -21,7 +21,7 @@ description:
     \"deep\" version of 'seq'. It is implemented on top of an 'NFData'
     typeclass (\"Normal Form Data\", data structures with no unevaluated
     components) which defines strategies for fully evaluating different
-    data types. See module documentation in "Control.Deepseq" for more
+    data types. See module documentation in "Control.DeepSeq" for more
     details.
 
 build-type:     Simple
