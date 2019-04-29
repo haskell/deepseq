@@ -16,6 +16,10 @@
 {-# LANGUAGE EmptyCase #-}
 #endif
 
+#if __GLASGOW_HASKELL__ >= 808
+{-# OPTIONS_GHC -Wno-deprecations #-} -- For the First, Last and Option instances
+#endif
+
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Control.DeepSeq
