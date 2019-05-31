@@ -179,6 +179,13 @@ instance GNFData arity a => GNFData arity (M1 i c a) where
   grnf args = grnf args . unM1
   {-# INLINEABLE grnf #-}
 
+#if __GLASGOW_HASKELL__ >= 800
+  -- @since 1.4.5.0
+instance GNFData arity (URec a) where
+  grnf _ = rwhnf
+  {-# INLINEABLE grnf #-}
+#endif
+
 instance (GNFData arity a, GNFData arity b) => GNFData arity (a :*: b) where
   grnf args (x :*: y) = grnf args x `seq` grnf args y
   {-# INLINEABLE grnf #-}
