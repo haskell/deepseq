@@ -1,9 +1,8 @@
 GNUmakefile
 /dist-install/
 /dist/
-ghc.mk
-/dist/
 /dist-newstyle/
+ghc.mk
 *.hi
 *.o
 .ghc.environment*
