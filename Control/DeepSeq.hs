@@ -489,12 +489,6 @@ instance NFData (Fixed a) where rnf = rwhnf
 -- |@since 1.4.3.0
 instance NFData1 Fixed where liftRnf _ = rwhnf
 
--- |This instance is for convenience and consistency with 'seq'.
--- This assumes that WHNF is equivalent to NF for functions.
---
--- @since 1.3.0.0
-instance NFData (a -> b) where rnf = rwhnf
-
 --Rational and complex numbers.
 
 #if MIN_VERSION_base(4,9,0)

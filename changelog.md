@@ -5,6 +5,8 @@
   * Add `GNFData` for URec
     This will enable deriving NFData instances for unboxed types
 
+  * Remove `NFData` instance for `a -> b`.
+
 ## 1.4.4.0 *Sep 2018*
 
   * Bundled with GHC 8.6.1
