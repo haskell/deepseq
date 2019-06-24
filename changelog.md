@@ -1,6 +1,6 @@
 # Changelog for [`deepseq` package](http://hackage.haskell.org/package/deepseq)
 
-## 1.4.5.0
+## 1.5.0.0
 
   * Add `GNFData` for URec
     This will enable deriving NFData instances for unboxed types
