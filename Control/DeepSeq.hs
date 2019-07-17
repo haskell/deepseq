@@ -179,10 +179,15 @@ instance GNFData arity a => GNFData arity (M1 i c a) where
   grnf args = grnf args . unM1
   {-# INLINEABLE grnf #-}
 
-#if __GLASGOW_HASKELL__ >= 800
+#if MIN_VERSION_base(4,9,0)
+  -- | Because 'URec' did not exist prior to @base-4.9@, this instance is only
+  -- defined on @base-4.9@ or later.
+  --
   -- @since 1.4.5.0
 instance GNFData arity (URec a) where
-  grnf _ = rwhnf
+  grnf _ = rwhnf -- Every URec data instance consists of a single data
+                 -- constructor containing a single strict field, so reducing
+                 -- any URec instance to WHNF suffices to reduce it to NF.
   {-# INLINEABLE grnf #-}
 #endif
 
