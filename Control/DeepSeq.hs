@@ -102,10 +102,15 @@ import Data.Monoid as Mon
 import Data.Typeable ( TypeRep, TyCon )
 import Data.Unique ( Unique )
 import Foreign.Ptr
-import Foreign.ForeignPtr
 import Foreign.C.Types
 import System.Exit ( ExitCode(..) )
 import System.Mem.StableName ( StableName )
+
+#if MIN_VERSION_base(4,8,0)
+import Foreign.ForeignPtr
+#else
+import Foreign.ForeignPtr.Safe
+#endif
 
 #if MIN_VERSION_base(4,6,0)
 import Data.Ord ( Down(Down) )
@@ -123,6 +128,10 @@ import Data.Type.Equality ( (:~:), (:~~:) )
 import Data.Type.Equality ( (:~:) )
 #elif MIN_VERSION_base(4,7,0)
 import Control.DeepSeq.BackDoor ( (:~:) )
+#endif
+
+#if MIN_VERSION_base(4,0,0)
+import Control.DeepSeq.BackDoor ( TVar )
 #endif
 
 #if MIN_VERSION_base(4,8,0)
@@ -627,7 +636,7 @@ instance (Ix i, NFData i, NFData e) => NFData (UArray i e) where
 instance (NFData i) => NFData1 (UArray i) where
 #else
 -- |@since 1.4.5.0
-instance (Ix i, NFData i) => NFData1 (UArray a) where
+instance (Ix i, NFData i) => NFData1 (UArray i) where
 #endif
     liftRnf _ = rwhnf
 
@@ -751,6 +760,16 @@ instance NFData (MVar a) where
 -- |@since 1.4.3.0
 instance NFData1 MVar where
     liftRnf _ = rwhnf
+
+#if MIN_VERSION_base(4,0,0)
+-- | __NOTE__: Only strict in the reference and not the referenced value.
+--
+-- @since 1.4.5.0
+instance NFData (TVar a) where
+    rnf = rwhnf
+instance NFData1 TVar where
+    liftRnf _ = rwhnf
+#endif
 
 ----------------------------------------------------------------------------
 -- GHC Specifics
