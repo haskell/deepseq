@@ -1,4 +1,5 @@
 GNUmakefile
 /dist-install/
 /dist/
+/dist-newstyle/
 ghc.mk
