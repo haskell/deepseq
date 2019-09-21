@@ -102,6 +102,7 @@ import Data.Monoid as Mon
 import Data.Typeable ( TypeRep, TyCon )
 import Data.Unique ( Unique )
 import Foreign.Ptr
+import Foreign.ForeignPtr
 import Foreign.C.Types
 import System.Exit ( ExitCode(..) )
 import System.Mem.StableName ( StableName )
@@ -773,6 +774,16 @@ instance NFData (FunPtr a) where
     rnf = rwhnf
 -- |@since 1.4.3.0
 instance NFData1 FunPtr where
+    liftRnf _ = rwhnf
+
+----------------------------------------------------------------------------
+-- Foreign.ForeignPtr
+
+-- |@since 1.4.5.0
+instance NFData (ForeignPtr a) where
+    rnf = rwhnf
+-- |@since 1.4.5.0
+instance NFData1 ForeignPtr where
     liftRnf _ = rwhnf
 
 ----------------------------------------------------------------------------
