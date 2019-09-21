@@ -95,6 +95,7 @@ import Data.Word
 import Data.Ratio
 import Data.Complex
 import Data.Array
+import Data.Array.Unboxed (UArray)
 import Data.Fixed
 import Data.Version
 import Data.Monoid as Mon
@@ -609,6 +610,30 @@ instance (Ix a, NFData a) => NFData1 (Array a) where
 -- |@since 1.4.3.0
 instance NFData2 Array where
     liftRnf2 r r' x = liftRnf2 r r (bounds x) `seq` liftRnf r' (Data.Array.elems x)
+#endif
+
+#if __GLASGOW_HASKELL__ >= 711
+-- |@since 1.4.5.0
+instance (NFData i, NFData e) => NFData (UArray i e) where
+#else
+-- |@since 1.4.5.0
+instance (Ix i, NFData i, NFData e) => NFData (UArray i e) where
+#endif
+    rnf = rwhnf
+
+#if __GLASGOW_HASKELL__ >= 711
+-- |@since 1.4.5.0
+instance (NFData i) => NFData1 (UArray i) where
+#else
+-- |@since 1.4.5.0
+instance (Ix i, NFData i) => NFData1 (UArray a) where
+#endif
+    liftRnf _ = rwhnf
+
+#if __GLASGOW_HASKELL__ >= 711
+-- |@since 1.4.5.0
+instance NFData2 UArray where
+    liftRnf2 _ _ = rwhnf
 #endif
 
 -- |@since 1.4.0.0
