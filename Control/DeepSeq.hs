@@ -130,9 +130,7 @@ import Data.Type.Equality ( (:~:) )
 import Control.DeepSeq.BackDoor ( (:~:) )
 #endif
 
-#if MIN_VERSION_base(4,0,0)
 import Control.DeepSeq.BackDoor ( TVar )
-#endif
 
 #if MIN_VERSION_base(4,8,0)
 import Data.Functor.Identity ( Identity(..) )
@@ -622,29 +620,17 @@ instance NFData2 Array where
     liftRnf2 r r' x = liftRnf2 r r (bounds x) `seq` liftRnf r' (Data.Array.elems x)
 #endif
 
-#if __GLASGOW_HASKELL__ >= 711
 -- |@since 1.4.5.0
 instance (NFData i, NFData e) => NFData (UArray i e) where
-#else
--- |@since 1.4.5.0
-instance (Ix i, NFData i, NFData e) => NFData (UArray i e) where
-#endif
     rnf = rwhnf
 
-#if __GLASGOW_HASKELL__ >= 711
 -- |@since 1.4.5.0
 instance (NFData i) => NFData1 (UArray i) where
-#else
--- |@since 1.4.5.0
-instance (Ix i, NFData i) => NFData1 (UArray i) where
-#endif
     liftRnf _ = rwhnf
 
-#if __GLASGOW_HASKELL__ >= 711
 -- |@since 1.4.5.0
 instance NFData2 UArray where
     liftRnf2 _ _ = rwhnf
-#endif
 
 -- |@since 1.4.0.0
 instance NFData a => NFData (Down a) where rnf = rnf1
@@ -761,7 +747,6 @@ instance NFData (MVar a) where
 instance NFData1 MVar where
     liftRnf _ = rwhnf
 
-#if MIN_VERSION_base(4,0,0)
 -- | __NOTE__: Only strict in the reference and not the referenced value.
 --
 -- @since 1.4.5.0
@@ -769,7 +754,6 @@ instance NFData (TVar a) where
     rnf = rwhnf
 instance NFData1 TVar where
     liftRnf _ = rwhnf
-#endif
 
 ----------------------------------------------------------------------------
 -- GHC Specifics
@@ -798,6 +782,9 @@ instance NFData1 FunPtr where
 ----------------------------------------------------------------------------
 -- Foreign.ForeignPtr
 
+-- | __NOTE__: Only strict in the reference and not the referenced value. Not
+--   strict in the finalizers.
+--
 -- |@since 1.4.5.0
 instance NFData (ForeignPtr a) where
     rnf = rwhnf

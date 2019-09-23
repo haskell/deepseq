@@ -22,7 +22,5 @@ import GHC.Exts as X ( Down(Down) )
 import Data.Type.Equality as X ( (:~:) )
 #endif
 
-#if MIN_VERSION_base(4,0,0)
 -- present since at least base-4.0, maybe sooner?
 import GHC.Conc as X ( TVar(TVar) )
-#endif
