@@ -70,6 +70,29 @@ matrix:
     - env: CABALVER=2.2 GHCVER=8.4.3
       compiler: ": #GHC 8.4.3"
       addons: {apt: {packages: [cabal-install-2.2,ghc-8.4.3], sources: [hvr-ghc]}}
+    - env: CABALVER=2.2 GHCVER=8.4.4
+      compiler: ": #GHC 8.4.4"
+      addons: {apt: {packages: [cabal-install-2.2,ghc-8.4.4], sources: [hvr-ghc]}}
+    - env: CABALVER=2.4 GHCVER=8.6.1
+      compiler: ": #GHC 8.6.1"
+      addons: {apt: {packages: [cabal-install-2.4,ghc-8.6.1], sources: [hvr-ghc]}}
+    - env: CABALVER=2.4 GHCVER=8.6.2
+      compiler: ": #GHC 8.6.2"
+      addons: {apt: {packages: [cabal-install-2.4,ghc-8.6.2], sources: [hvr-ghc]}}
+    - env: CABALVER=2.4 GHCVER=8.6.3
+      compiler: ": #GHC 8.6.3"
+      addons: {apt: {packages: [cabal-install-2.4,ghc-8.6.3], sources: [hvr-ghc]}}
+    - env: CABALVER=2.4 GHCVER=8.6.4
+      compiler: ": #GHC 8.6.4"
+      addons: {apt: {packages: [cabal-install-2.4,ghc-8.6.4], sources: [hvr-ghc]}}
+    - env: CABALVER=2.4 GHCVER=8.6.5
+      compiler: ": #GHC 8.6.5"
+      addons: {apt: {packages: [cabal-install-2.4,ghc-8.6.5], sources: [hvr-ghc]}}
+    # This can be enabled pending a working build plan for test-framework and a
+    # refactoring of the dep-cycle-breaking magic below.
+    #- env: CABALVER=3.0 GHCVER=8.8.1
+    #  compiler: ": #GHC 8.8.1"
+    #  addons: {apt: {packages: [cabal-install-3.0,ghc-8.8.1], sources: [hvr-ghc]}}
 
 before_install:
  - unset CC
