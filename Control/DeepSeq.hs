@@ -215,6 +215,7 @@ instance (NFData1 f, GNFData One g) => GNFData One (f :.: g) where
     grnf args = liftRnf (grnf args) . unComp1
 
 infixr 0 $!!
+infixr 0 `deepseq`
 
 -- | 'deepseq': fully evaluates the first argument, before returning the
 -- second.
