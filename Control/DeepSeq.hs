@@ -16,7 +16,7 @@
 {-# LANGUAGE EmptyCase #-}
 #endif
 
-#if __GLASGOW_HASKELL__ >= 812
+#if __GLASGOW_HASKELL__ >= 811
 -- For the Option instance (https://gitlab.haskell.org/ghc/ghc/issues/15028)
 {-# OPTIONS_GHC -Wno-deprecations #-}
 #endif
