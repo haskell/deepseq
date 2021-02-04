@@ -16,7 +16,7 @@
 {-# LANGUAGE EmptyCase #-}
 #endif
 
-#if __GLASGOW_HASKELL__ >= 811
+#if __GLASGOW_HASKELL__ >= 811 && __GLASGOW_HASKELL__ < 901
 -- For the Option instance (https://gitlab.haskell.org/ghc/ghc/issues/15028)
 {-# OPTIONS_GHC -Wno-deprecations #-}
 #endif
@@ -908,11 +908,13 @@ instance NFData m => NFData (WrappedMonoid m) where rnf = rnf1
 instance NFData1 WrappedMonoid where
   liftRnf r (WrapMonoid a) = r a
 
+#if __GLASGOW_HASKELL__ < 901
 -- |@since 1.4.2.0
 instance NFData a => NFData (Option a) where rnf = rnf1
 -- |@since 1.4.3.0
 instance NFData1 Option where
   liftRnf r (Option a) = liftRnf r a
+#endif
 #endif
 
 ----------------------------------------------------------------------------
