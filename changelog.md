@@ -4,8 +4,6 @@
 
   * Add `GNFData` for URec
     This will enable deriving NFData instances for unboxed types
-  * Set `infixr 0` for `deepseq`
-    Makes infix use of 'deepseq' parse the same way as infix use of 'seq'
 
 ## 1.4.4.0 *Sep 2018*
 
