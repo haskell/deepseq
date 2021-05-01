@@ -100,6 +100,7 @@ import Data.Word
 import Data.Ratio
 import Data.Complex
 import Data.Array
+import Data.Array.Unboxed (UArray)
 import Data.Fixed
 import Data.Version
 import Data.Monoid as Mon
@@ -109,6 +110,12 @@ import Foreign.Ptr
 import Foreign.C.Types
 import System.Exit ( ExitCode(..) )
 import System.Mem.StableName ( StableName )
+
+#if MIN_VERSION_base(4,8,0)
+import Foreign.ForeignPtr
+#else
+import Foreign.ForeignPtr.Safe
+#endif
 
 #if MIN_VERSION_base(4,6,0)
 import Data.Ord ( Down(Down) )
@@ -127,6 +134,8 @@ import Data.Type.Equality ( (:~:) )
 #elif MIN_VERSION_base(4,7,0)
 import Control.DeepSeq.BackDoor ( (:~:) )
 #endif
+
+import Control.DeepSeq.BackDoor ( TVar )
 
 #if MIN_VERSION_base(4,8,0)
 import Data.Functor.Identity ( Identity(..) )
@@ -617,6 +626,18 @@ instance NFData2 Array where
     liftRnf2 r r' x = liftRnf2 r r (bounds x) `seq` liftRnf r' (Data.Array.elems x)
 #endif
 
+-- |@since 1.4.5.0
+instance (NFData i, NFData e) => NFData (UArray i e) where
+    rnf = rwhnf
+
+-- |@since 1.4.5.0
+instance (NFData i) => NFData1 (UArray i) where
+    liftRnf _ = rwhnf
+
+-- |@since 1.4.5.0
+instance NFData2 UArray where
+    liftRnf2 _ _ = rwhnf
+
 -- |@since 1.4.0.0
 instance NFData a => NFData (Down a) where rnf = rnf1
 -- |@since 1.4.3.0
@@ -732,6 +753,14 @@ instance NFData (MVar a) where
 instance NFData1 MVar where
     liftRnf _ = rwhnf
 
+-- | __NOTE__: Only strict in the reference and not the referenced value.
+--
+-- @since 1.4.5.0
+instance NFData (TVar a) where
+    rnf = rwhnf
+instance NFData1 TVar where
+    liftRnf _ = rwhnf
+
 ----------------------------------------------------------------------------
 -- GHC Specifics
 
@@ -754,6 +783,19 @@ instance NFData (FunPtr a) where
     rnf = rwhnf
 -- |@since 1.4.3.0
 instance NFData1 FunPtr where
+    liftRnf _ = rwhnf
+
+----------------------------------------------------------------------------
+-- Foreign.ForeignPtr
+
+-- | __NOTE__: Only strict in the reference and not the referenced value. Not
+--   strict in the finalizers.
+--
+-- |@since 1.4.5.0
+instance NFData (ForeignPtr a) where
+    rnf = rwhnf
+-- |@since 1.4.5.0
+instance NFData1 ForeignPtr where
     liftRnf _ = rwhnf
 
 ----------------------------------------------------------------------------

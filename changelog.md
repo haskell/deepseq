@@ -7,6 +7,15 @@
   * Set `infixr 0` for `deepseq`
     Makes infix use of 'deepseq' parse the same way as infix use of 'seq'
 
+  * Add `NFData` instance for `UArray`
+    ([#50](https://github.com/haskell/deepseq/pull/50))
+
+  * Add `NFData` instance for `ForeignPtr`
+    ([#50](https://github.com/haskell/deepseq/pull/50))
+
+  * Add `NFData` instance for `TVar`
+    ([#50](https://github.com/haskell/deepseq/pull/50))
+
 ## 1.4.4.0 *Sep 2018*
 
   * Bundled with GHC 8.6.1
