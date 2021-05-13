@@ -1,11 +1,13 @@
 # Changelog for [`deepseq` package](http://hackage.haskell.org/package/deepseq)
 
-## 1.4.5.0
+## 1.5.0.0
 
   * Add `GNFData` for URec
     This will enable deriving NFData instances for unboxed types
   * Set `infixr 0` for `deepseq`
     Makes infix use of 'deepseq' parse the same way as infix use of 'seq'
+
+  * Remove `NFData` instance for `a -> b`.
 
 ## 1.4.4.0 *Sep 2018*
 
