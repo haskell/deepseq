@@ -6,6 +6,8 @@
     ([#69](https://github.com/haskell/deepseq/pull/69))
   * Add once again `infixr 0 deepseq`
     ([#56](https://github.com/haskell/deepseq/pull/56), [#74](https://github.com/haskell/deepseq/issues/74))
+  * Add `NFData` instance for `ByteArray`
+    ([#65](https://github.com/haskell/deepseq/pull/65))
 
 ## 1.4.6.1
 

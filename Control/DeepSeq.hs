@@ -21,6 +21,10 @@
 {-# OPTIONS_GHC -Wno-deprecations #-}
 #endif
 
+#define BYTEARRAY_IN_BASE (__GLASGOW_HASKELL__ >= 903)
+-- At the moment of writing GHC source tree has not yet bumped `base` version,
+-- so using __GLASGOW_HASKELL__ as a proxy instead of MIN_VERSION_base(4,17,0).
+
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Control.DeepSeq
@@ -159,6 +163,10 @@ import GHC.Generics
 #if MIN_VERSION_ghc_prim(0,7,0)
 import GHC.Tuple (Solo (..))
 #endif
+#endif
+
+#if BYTEARRAY_IN_BASE
+import Data.Array.Byte (ByteArray(..))
 #endif
 
 -- | Hidden internal type-class
@@ -1046,3 +1054,12 @@ instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5, NFData a6, NFDa
 instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5, NFData a6, NFData a7) =>
          NFData2 ((,,,,,,,,) a1 a2 a3 a4 a5 a6 a7) where
   liftRnf2 r r' (x1,x2,x3,x4,x5,x6,x7,x8,x9) = rnf x1 `seq` rnf x2 `seq` rnf x3 `seq` rnf x4 `seq` rnf x5 `seq` rnf x6 `seq` rnf x7 `seq` r x8 `seq` r' x9
+
+----------------------------------------------------------------------------
+-- ByteArray
+
+#if BYTEARRAY_IN_BASE
+-- |@since 1.4.6.0
+instance NFData ByteArray where
+  rnf (ByteArray _) = ()
+#endif
