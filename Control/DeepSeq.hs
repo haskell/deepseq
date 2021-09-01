@@ -155,6 +155,12 @@ import GHC.SrcLoc ( SrcLoc(..) )
 import GHC.Fingerprint.Type ( Fingerprint(..) )
 import GHC.Generics
 
+#ifdef MIN_VERSION_ghc_prim
+#if MIN_VERSION_ghc_prim(0,7,0)
+import GHC.Tuple (Solo (..))
+#endif
+#endif
+
 -- | Hidden internal type-class
 class GNFData arity f where
   grnf :: RnfArgs arity a -> f a -> ()
@@ -951,6 +957,17 @@ instance NFData CallStack where
 
 ----------------------------------------------------------------------------
 -- Tuples
+
+#ifdef MIN_VERSION_ghc_prim
+#if MIN_VERSION_ghc_prim(0,7,0)
+-- |@since 1.4.6.0
+instance NFData a => NFData (Solo a) where
+  rnf (Solo a) = rnf a
+-- |@since 1.4.6.0
+instance NFData1 Solo where
+  liftRnf r (Solo a) = r a
+#endif
+#endif
 
 instance (NFData a, NFData b) => NFData (a,b) where rnf = rnf2
 -- |@since 1.4.3.0
