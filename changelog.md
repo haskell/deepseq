@@ -1,5 +1,13 @@
 # Changelog for [`deepseq` package](http://hackage.haskell.org/package/deepseq)
 
+## 1.4.6.0
+
+  * Bundled with GHC 9.2.1
+  * Set the `infixr 0 deepseq` to be consistent with `seq`
+    ([#56](https://github.com/haskell/deepseq/pull/56))
+  * Add instances for `Solo` (GHC-9)
+    ([#69](https://github.com/haskell/deepseq/pull/69))
+
 ## 1.4.5.0
 
   * Add `GNFData` for URec
