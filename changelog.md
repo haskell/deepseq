@@ -1,15 +1,21 @@
 # Changelog for [`deepseq` package](http://hackage.haskell.org/package/deepseq)
 
+## 1.4.7.0
+
+  * Add instances for `Solo` (GHC-9)
+    ([#69](https://github.com/haskell/deepseq/pull/69))
+
 ## 1.4.6.1
 
   * Revert `infixr 0 deepseq`; this is a breaking change and requires a major version bump
 
 ## 1.4.6.0
 
+  * Bundled with GHC 9.2.1
   * Remove instances for Data.Semigroup.Option for GHC >= 9.2
     ([#62](https://github.com/haskell/deepseq/pull/62))
-  * Set `infixr 0` for `deepseq`
-    Makes infix use of 'deepseq' parse the same way as infix use of 'seq'
+  * Set the `infixr 0 deepseq` to be consistent with `seq`
+    ([#56](https://github.com/haskell/deepseq/pull/56))
 
 ## 1.4.5.0
 
