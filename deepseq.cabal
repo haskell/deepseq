@@ -74,4 +74,3 @@ library
 
   exposed-modules: Control.DeepSeq
   other-modules:   Control.DeepSeq.BackDoor
-
