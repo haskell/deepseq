@@ -15,11 +15,8 @@ test-suite test
   build-depends:
     array,
     base,
-    ghc-prim,
-    -- end of packages with inherited version constraints
-    test-framework == 0.8.*,
-    test-framework-hunit == 0.3.*,
-    HUnit >= 1.2 && < 1.7
+    deepseq,
+    ghc-prim
   ghc-options: -Wall
   other-extensions:
     CPP
