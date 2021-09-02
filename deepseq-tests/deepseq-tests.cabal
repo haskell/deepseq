@@ -1,0 +1,38 @@
+Name:           deepseq-tests
+Version:        0.1
+License:        BSD3
+License-File:   LICENSE
+Synopsis:       deepseq tests
+Cabal-Version:  >= 1.10
+Build-Type:     Simple
+Description:    @deepseq@ tests
+
+test-suite test
+  Default-Language: Haskell2010
+  hs-source-dirs: .
+  main-is: Main.hs
+  type: exitcode-stdio-1.0
+  build-depends:
+    array,
+    base,
+    ghc-prim,
+    -- end of packages with inherited version constraints
+    test-framework == 0.8.*,
+    test-framework-hunit == 0.3.*,
+    HUnit >= 1.2 && < 1.7
+  ghc-options: -Wall
+  other-extensions:
+    CPP
+    BangPatterns
+    DefaultSignatures
+    DeriveDataTypeable
+    DeriveGeneric
+    FlexibleContexts
+    Safe
+    TupleSections
+    TypeOperators
+
+source-repository head
+  type:     git
+  location: https://github.com/haskell/deepseq
+  subdir:   deepseq-tests
