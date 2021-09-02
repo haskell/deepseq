@@ -74,3 +74,25 @@ library
 
   exposed-modules: Control.DeepSeq
   other-modules:   Control.DeepSeq.BackDoor
+
+test-suite test
+  Default-Language: Haskell2010
+  hs-source-dirs: tests
+  main-is: Main.hs
+  type: exitcode-stdio-1.0
+  build-depends:
+    array,
+    base,
+    deepseq,
+    ghc-prim
+  ghc-options: -Wall
+  other-extensions:
+    CPP
+    BangPatterns
+    DefaultSignatures
+    DeriveDataTypeable
+    DeriveGeneric
+    FlexibleContexts
+    Safe
+    TupleSections
+    TypeOperators
