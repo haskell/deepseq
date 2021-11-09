@@ -1,5 +1,10 @@
 # Changelog for [`deepseq` package](http://hackage.haskell.org/package/deepseq)
 
+## 1.4.6.0
+
+  * Remove instances for Data.Semigroup.Option for GHC >= 9.2
+    ([#62](https://github.com/haskell/deepseq/pull/62))
+
 ## 1.4.5.0
 
   * Add `GNFData` for URec

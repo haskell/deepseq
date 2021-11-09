@@ -1,6 +1,6 @@
 cabal-version:  1.12
 name:           deepseq
-version:        1.4.5.0
+version:        1.4.6.0
 -- NOTE: Don't forget to update ./changelog.md
 
 license:        BSD3
@@ -25,7 +25,10 @@ description:
     details.
 
 build-type:     Simple
-tested-with:    GHC==8.6.5, GHC==8.6.4,GHC==8.6.3,GHC==8.6.3,GHC==8.6.1,
+tested-with:    
+                GHC==9.2.1, GHC==9.0.1,
+                GHC==8.10.7,
+                GHC==8.6.5, GHC==8.6.4,GHC==8.6.3,GHC==8.6.3,GHC==8.6.1,
                 GHC==8.4.4, GHC==8.4.3, GHC==8.4.2, GHC==8.4.1,
                 GHC==8.2.2, GHC==8.2.1,
                 GHC==8.0.2, GHC==8.0.1,
