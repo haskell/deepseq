@@ -1,4 +1,3 @@
 GNUmakefile
-/dist-install/
-/dist/
+/dist-*
 ghc.mk
