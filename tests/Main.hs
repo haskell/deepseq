@@ -182,7 +182,7 @@ case_4_4b = testCase "Case4.4b" $ withSeqState 0xffffffffffffffff $ do
 ----------------------------------------------------------------------------
 
 main :: IO ()
-main = sequence
+main = sequence_
   [ case_1, case_2, case_3
   , case_4_1, case_4_2, case_4_3, case_4_4
 #if __GLASGOW_HASKELL__ >= 706
