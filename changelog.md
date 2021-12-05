@@ -8,6 +8,8 @@
     ([#56](https://github.com/haskell/deepseq/pull/56), [#74](https://github.com/haskell/deepseq/issues/74))
   * Add `NFData` instance for `ByteArray`
     ([#65](https://github.com/haskell/deepseq/pull/65))
+  * Drop support for GHC 7 to simplify CPP
+    ([#75](https://github.com/haskell/deepseq/pull/75))
 
 ## 1.4.6.1
 
