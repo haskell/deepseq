@@ -7,14 +7,8 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE Safe #-}
 {-# LANGUAGE TypeOperators #-}
-
-#if __GLASGOW_HASKELL__ >= 706
 {-# LANGUAGE PolyKinds #-}
-#endif
-
-#if __GLASGOW_HASKELL__ >= 708
 {-# LANGUAGE EmptyCase #-}
-#endif
 
 #if __GLASGOW_HASKELL__ >= 811 && __GLASGOW_HASKELL__ < 901
 -- For the Option instance (https://gitlab.haskell.org/ghc/ghc/issues/15028)
@@ -113,48 +107,27 @@ import Foreign.Ptr
 import Foreign.C.Types
 import System.Exit ( ExitCode(..) )
 import System.Mem.StableName ( StableName )
-
-#if MIN_VERSION_base(4,6,0)
 import Data.Ord ( Down(Down) )
-#else
-import Control.DeepSeq.BackDoor ( Down(Down) )
-#endif
-
-#if MIN_VERSION_base(4,7,0)
 import Data.Proxy ( Proxy(Proxy) )
-#endif
 
 #if MIN_VERSION_base(4,10,0)
 import Data.Type.Equality ( (:~:), (:~~:) )
-#elif MIN_VERSION_base(4,9,0)
+#else
 import Data.Type.Equality ( (:~:) )
-#elif MIN_VERSION_base(4,7,0)
-import Control.DeepSeq.BackDoor ( (:~:) )
 #endif
 
-#if MIN_VERSION_base(4,8,0)
 import Data.Functor.Identity ( Identity(..) )
 import Data.Typeable ( rnfTypeRep, rnfTyCon )
 import Data.Void ( Void, absurd )
 import Numeric.Natural ( Natural )
-#else
-import Data.Typeable ( typeRepTyCon, typeRepArgs, tyConPackage, tyConModule, tyConName )
-#endif
 
-#if MIN_VERSION_base(4,9,0)
 import Data.List.NonEmpty ( NonEmpty (..) )
 import Data.Semigroup as Semi
-#endif
 
-#if MIN_VERSION_base(4,9,0)
 import GHC.Stack.Types ( CallStack(..), SrcLoc(..) )
 import Data.Functor.Compose
 import qualified Data.Functor.Sum as Functor
 import qualified Data.Functor.Product as Functor
-#elif MIN_VERSION_base(4,8,1)
-import GHC.Stack ( CallStack(..) )
-import GHC.SrcLoc ( SrcLoc(..) )
-#endif
 
 import GHC.Fingerprint.Type ( Fingerprint(..) )
 import GHC.Generics
@@ -174,11 +147,7 @@ class GNFData arity f where
   grnf :: RnfArgs arity a -> f a -> ()
 
 instance GNFData arity V1 where
-#if __GLASGOW_HASKELL__ >= 708
   grnf _ x = case x of {}
-#else
-  grnf _ !_ = error "Control.DeepSeq.rnf: uninhabited type"
-#endif
 
 data Zero
 data One
@@ -198,17 +167,11 @@ instance GNFData arity a => GNFData arity (M1 i c a) where
   grnf args = grnf args . unM1
   {-# INLINEABLE grnf #-}
 
-#if MIN_VERSION_base(4,9,0)
-  -- | Because 'URec' did not exist prior to @base-4.9@, this instance is only
-  -- defined on @base-4.9@ or later.
-  --
-  -- @since 1.4.5.0
 instance GNFData arity (URec a) where
   grnf _ = rwhnf -- Every URec data instance consists of a single data
                  -- constructor containing a single strict field, so reducing
                  -- any URec instance to WHNF suffices to reduce it to NF.
   {-# INLINEABLE grnf #-}
-#endif
 
 instance (GNFData arity a, GNFData arity b) => GNFData arity (a :*: b) where
   grnf args (x :*: y) = grnf args x `seq` grnf args y
@@ -467,7 +430,6 @@ instance NFData Word64   where rnf = rwhnf
 -- | @since 1.4.4.0
 instance NFData MaskingState where rnf = rwhnf
 
-#if MIN_VERSION_base(4,7,0)
 -- |@since 1.4.0.0
 instance NFData (Proxy a) where rnf Proxy = ()
 -- |@since 1.4.3.0
@@ -479,7 +441,6 @@ instance NFData (a :~: b) where rnf = rwhnf
 instance NFData1 ((:~:) a) where liftRnf _ = rwhnf
 -- | @since 1.4.3.0
 instance NFData2 (:~:) where liftRnf2 _ _ = rwhnf
-#endif
 
 #if MIN_VERSION_base(4,10,0)
 -- | @since 1.4.3.0
@@ -490,7 +451,6 @@ instance NFData1 ((:~~:) a) where liftRnf _ = rwhnf
 instance NFData2 (:~~:) where liftRnf2 _ _ = rwhnf
 #endif
 
-#if MIN_VERSION_base(4,8,0)
 -- |@since 1.4.0.0
 instance NFData a => NFData (Identity a) where
     rnf = rnf1
@@ -507,7 +467,6 @@ instance NFData Void where
 
 -- |@since 1.4.0.0
 instance NFData Natural  where rnf = rwhnf
-#endif
 
 -- |@since 1.3.0.0
 instance NFData (Fixed a) where rnf = rwhnf
@@ -522,7 +481,6 @@ instance NFData (a -> b) where rnf = rwhnf
 
 --Rational and complex numbers.
 
-#if MIN_VERSION_base(4,9,0)
 -- | Available on @base >=4.9@
 --
 -- @since 1.4.3.0
@@ -555,9 +513,6 @@ instance (NFData1 f, NFData1 g, NFData a) => NFData (Functor.Product f g a) wher
   rnf = rnf1
 
 instance NFData a => NFData (Ratio a) where
-#else
-instance (Integral a, NFData a) => NFData (Ratio a) where
-#endif
   rnf x = rnf (numerator x, denominator x)
 
 instance (NFData a) => NFData (Complex a) where
@@ -609,27 +564,16 @@ instance NFData2 Const where
 
 -- We should use MIN_VERSION array(0,5,1,1) but that's not possible.
 -- There isn't an underscore to not break C preprocessor
-#if __GLASGOW_HASKELL__ >= 711
 instance (NFData a, NFData b) => NFData (Array a b) where
-#else
-instance (Ix a, NFData a, NFData b) => NFData (Array a b) where
-#endif
     rnf x = rnf (bounds x, Data.Array.elems x)
 
-#if __GLASGOW_HASKELL__ >= 711
 -- |@since 1.4.3.0
 instance (NFData a) => NFData1 (Array a) where
-#else
--- |@since 1.4.3.0
-instance (Ix a, NFData a) => NFData1 (Array a) where
-#endif
     liftRnf r x = rnf (bounds x) `seq` liftRnf r (Data.Array.elems x)
 
-#if __GLASGOW_HASKELL__ >= 711
 -- |@since 1.4.3.0
 instance NFData2 Array where
     liftRnf2 r r' x = liftRnf2 r r (bounds x) `seq` liftRnf r' (Data.Array.elems x)
-#endif
 
 -- |@since 1.4.0.0
 instance NFData a => NFData (Down a) where rnf = rnf1
@@ -688,7 +632,6 @@ instance NFData ThreadId where
 instance NFData Unique where
     rnf = rwhnf -- assumes `newtype Unique = Unique Integer`
 
-#if MIN_VERSION_base(4,8,0)
 -- | __NOTE__: Prior to @deepseq-1.4.4.0@ this instance was only defined for @base-4.8.0.0@ and later.
 --
 -- @since 1.4.0.0
@@ -700,21 +643,7 @@ instance NFData TypeRep where
 -- @since 1.4.0.0
 instance NFData TyCon where
     rnf tycon = rnfTyCon tycon
-#else
--- | __NOTE__: Prior to @deepseq-1.4.4.0@ this instance was only defined for @base-4.8.0.0@ and later.
---
--- @since 1.4.0.0
-instance NFData TypeRep where
-    rnf tr = rnf (typeRepTyCon tr) `seq` rnf (typeRepArgs tr)
 
--- | __NOTE__: Prior to @deepseq-1.4.4.0@ this instance was only defined for @base-4.8.0.0@ and later.
---
--- @since 1.4.0.0
-instance NFData TyCon where
-    rnf tc = rnf (tyConPackage tc) `seq`
-             rnf (tyConModule  tc) `seq`
-             rnf (tyConName    tc)
-#endif
 
 -- | __NOTE__: Only strict in the reference and not the referenced value.
 --
@@ -877,7 +806,6 @@ instance NFData ExitCode where
 ----------------------------------------------------------------------------
 -- instances previously provided by semigroups package
 
-#if MIN_VERSION_base(4,9,0)
 -- |@since 1.4.2.0
 instance NFData a => NFData (NonEmpty a) where rnf = rnf1
 -- |@since 1.4.3.0
@@ -929,12 +857,10 @@ instance NFData a => NFData (Option a) where rnf = rnf1
 instance NFData1 Option where
   liftRnf r (Option a) = liftRnf r a
 #endif
-#endif
 
 ----------------------------------------------------------------------------
 -- GHC.Stack
 
-#if MIN_VERSION_base(4,9,0)
 -- |@since 1.4.2.0
 instance NFData SrcLoc where
   rnf (SrcLoc a b c d e f g) = rnf a `seq` rnf b `seq` rnf c `seq`
@@ -945,23 +871,6 @@ instance NFData CallStack where
   rnf EmptyCallStack = ()
   rnf (PushCallStack a b c) = rnf a `seq` rnf b `seq` rnf c
   rnf (FreezeCallStack a)   = rnf a
-
-#elif MIN_VERSION_base(4,8,1)
--- |@since 1.4.2.0
-instance NFData SrcLoc where
-  -- base-4.8 didn't expose the 'SrcLoc' constructor
-  rnf sl = rnf (srcLocPackage   sl) `seq`
-           rnf (srcLocModule    sl) `seq`
-           rnf (srcLocFile      sl) `seq`
-           rnf (srcLocStartLine sl) `seq`
-           rnf (srcLocStartCol  sl) `seq`
-           rnf (srcLocEndLine   sl) `seq`
-           rnf (srcLocEndCol    sl)
-
--- |@since 1.4.2.0
-instance NFData CallStack where
-  rnf = rnf . getCallStack
-#endif
 
 ----------------------------------------------------------------------------
 -- Tuples
