@@ -15,12 +15,8 @@ import Data.IORef
 import Data.Typeable
 import Data.Word
 import GHC.Generics
+import System.Exit (exitFailure)
 import System.IO.Unsafe (unsafePerformIO)
-
--- import Test.Framework (defaultMain, testGroup, testCase)
-import Test.Framework
-import Test.Framework.Providers.HUnit
-import Test.HUnit
 
 -- IUT
 import Control.DeepSeq
@@ -47,9 +43,13 @@ withSeqState expectedState act = withMVar seqStateLock $ \() -> do
     0  <- resetSeqState
     () <- act
     st <- resetSeqState
-    unless (st == expectedState) $
-        assertFailure ("withSeqState: actual seq-state ("++show st++") doesn't match expected value ("++
-                       show expectedState++")")
+    unless (st == expectedState) $ do
+        putStrLn $ "withSeqState: actual seq-state (" ++
+                   show st ++
+                   ") doesn't match expected value (" ++
+                   show expectedState ++
+                   ")"
+        exitFailure
 
 seqState :: IORef Word64
 seqState = unsafePerformIO $ newIORef 0
@@ -85,15 +85,21 @@ instance NFData RnfEx where rnf e = throw e
 assertRnfEx :: () -> IO ()
 assertRnfEx v = handleJust isWanted (const $ return ()) $ do
     () <- evaluate v
-    assertFailure "failed to trigger expected RnfEx exception"
+    putStrLn "failed to trigger expected RnfEx exception"
+    exitFailure
   where isWanted = guard . (== RnfEx)
 
 ----------------------------------------------------------------------------
 
-case_1, case_2, case_3 :: Test.Framework.Test
-case_4_1, case_4_2, case_4_3, case_4_4 :: Test.Framework.Test
+testCase :: String -> IO a -> IO a
+testCase testName io = do
+    putStrLn testName
+    io
+
+case_1, case_2, case_3 :: IO ()
+case_4_1, case_4_2, case_4_3, case_4_4 :: IO ()
 #if __GLASGOW_HASKELL__ >= 706
-case_4_1b, case_4_2b, case_4_3b, case_4_4b :: Test.Framework.Test
+case_4_1b, case_4_2b, case_4_3b, case_4_4b :: IO ()
 #endif
 
 newtype Case1 = Case1 Int
@@ -176,12 +182,10 @@ case_4_4b = testCase "Case4.4b" $ withSeqState 0xffffffffffffffff $ do
 ----------------------------------------------------------------------------
 
 main :: IO ()
-main = defaultMain [tests]
-  where
-    tests = testGroup ""
-        [ case_1, case_2, case_3
-        , case_4_1, case_4_2, case_4_3, case_4_4
+main = sequence_
+  [ case_1, case_2, case_3
+  , case_4_1, case_4_2, case_4_3, case_4_4
 #if __GLASGOW_HASKELL__ >= 706
-        , case_4_1b, case_4_2b, case_4_3b, case_4_4b
+  , case_4_1b, case_4_2b, case_4_3b, case_4_4b
 #endif
-        ]
+  ]

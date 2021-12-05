@@ -1,6 +1,6 @@
 cabal-version:  1.12
 name:           deepseq
-version:        1.4.4.0
+version:        1.4.7.0
 -- NOTE: Don't forget to update ./changelog.md
 
 license:        BSD3
@@ -25,14 +25,17 @@ description:
     details.
 
 build-type:     Simple
-tested-with:    GHC==8.6.1,
-                GHC==8.4.3, GHC==8.4.2, GHC==8.4.1,
-                GHC==8.2.2, GHC==8.2.1,
-                GHC==8.0.2, GHC==8.0.1,
-                GHC==7.10.3, GHC==7.10.2, GHC==7.10.1,
-                GHC==7.8.4, GHC==7.8.3, GHC==7.8.2, GHC==7.8.1,
-                GHC==7.6.3, GHC==7.6.2, GHC==7.6.1,
-                GHC==7.4.2, GHC==7.4.1
+tested-with:    
+                GHC==9.2.1, GHC==9.0.1,
+                GHC==8.10.7,
+                GHC==8.6.5, GHC==8.6.4,GHC==8.6.3,GHC==8.6.3,GHC==8.6.1,
+                GHC==8.4.4, GHC==8.4.3, GHC==8.4.2, GHC==8.4.1,
+                GHC==8.2.2,
+                GHC==8.0.2,
+                GHC==7.10.3,
+                GHC==7.8.4,
+                GHC==7.6.3,
+                GHC==7.4.2
 
 extra-source-files: changelog.md
 
@@ -57,42 +60,42 @@ library
   if impl(ghc == 7.4.*)
     build-depends: ghc-prim == 0.2.*
 
+  -- Solo lives in ghc-prim in GHC-9.0 (and maybe still in GHC-9.2)
+  if impl(ghc >=9.0)
+    build-depends: ghc-prim
+
   if impl(ghc>=7.6)
     other-extensions: PolyKinds
 
   if impl(ghc>=7.8)
     other-extensions: EmptyCase
 
-  build-depends: base       >= 4.5 && < 4.14,
+
+  build-depends: base       >= 4.5 && < 4.17,
                  array      >= 0.4 && < 0.6
   ghc-options: -Wall
 
   exposed-modules: Control.DeepSeq
   other-modules:   Control.DeepSeq.BackDoor
 
-test-suite deepseq-generics-tests
-    default-language:    Haskell2010
-    type:                exitcode-stdio-1.0
-    hs-source-dirs:      . tests
-    main-is:             Main.hs
-    other-extensions:
-        CPP
-        BangPatterns
-        DefaultSignatures
-        DeriveDataTypeable
-        DeriveGeneric
-        FlexibleContexts
-        Safe
-        TupleSections
-        TypeOperators
-
-    ghc-options:         -Wall
-
-    build-depends:
-        array,
-        base,
-        ghc-prim,
-        -- end of packages with inherited version constraints
-        test-framework == 0.8.*,
-        test-framework-hunit == 0.3.*,
-        HUnit >= 1.2 && < 1.7
+test-suite test
+  Default-Language: Haskell2010
+  hs-source-dirs: tests
+  main-is: Main.hs
+  type: exitcode-stdio-1.0
+  build-depends:
+    array,
+    base,
+    deepseq,
+    ghc-prim
+  ghc-options: -Wall
+  other-extensions:
+    CPP
+    BangPatterns
+    DefaultSignatures
+    DeriveDataTypeable
+    DeriveGeneric
+    FlexibleContexts
+    Safe
+    TupleSections
+    TypeOperators

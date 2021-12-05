@@ -16,6 +16,15 @@
 {-# LANGUAGE EmptyCase #-}
 #endif
 
+#if __GLASGOW_HASKELL__ >= 811 && __GLASGOW_HASKELL__ < 901
+-- For the Option instance (https://gitlab.haskell.org/ghc/ghc/issues/15028)
+{-# OPTIONS_GHC -Wno-deprecations #-}
+#endif
+
+#define BYTEARRAY_IN_BASE (__GLASGOW_HASKELL__ >= 903)
+-- At the moment of writing GHC source tree has not yet bumped `base` version,
+-- so using __GLASGOW_HASKELL__ as a proxy instead of MIN_VERSION_base(4,17,0).
+
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Control.DeepSeq
@@ -159,6 +168,16 @@ import GHC.SrcLoc ( SrcLoc(..) )
 import GHC.Fingerprint.Type ( Fingerprint(..) )
 import GHC.Generics
 
+#ifdef MIN_VERSION_ghc_prim
+#if MIN_VERSION_ghc_prim(0,7,0)
+import GHC.Tuple (Solo (..))
+#endif
+#endif
+
+#if BYTEARRAY_IN_BASE
+import Data.Array.Byte (ByteArray(..))
+#endif
+
 -- | Hidden internal type-class
 class GNFData arity f where
   grnf :: RnfArgs arity a -> f a -> ()
@@ -219,6 +238,7 @@ instance (NFData1 f, GNFData One g) => GNFData One (f :.: g) where
     grnf args = liftRnf (grnf args) . unComp1
 
 infixr 0 $!!
+infixr 0 `deepseq`
 
 -- | 'deepseq': fully evaluates the first argument, before returning the
 -- second.
@@ -944,11 +964,13 @@ instance NFData m => NFData (WrappedMonoid m) where rnf = rnf1
 instance NFData1 WrappedMonoid where
   liftRnf r (WrapMonoid a) = r a
 
+#if __GLASGOW_HASKELL__ < 901
 -- |@since 1.4.2.0
 instance NFData a => NFData (Option a) where rnf = rnf1
 -- |@since 1.4.3.0
 instance NFData1 Option where
   liftRnf r (Option a) = liftRnf r a
+#endif
 #endif
 
 ----------------------------------------------------------------------------
@@ -985,6 +1007,17 @@ instance NFData CallStack where
 
 ----------------------------------------------------------------------------
 -- Tuples
+
+#ifdef MIN_VERSION_ghc_prim
+#if MIN_VERSION_ghc_prim(0,7,0)
+-- |@since 1.4.6.0
+instance NFData a => NFData (Solo a) where
+  rnf (Solo a) = rnf a
+-- |@since 1.4.6.0
+instance NFData1 Solo where
+  liftRnf r (Solo a) = r a
+#endif
+#endif
 
 instance (NFData a, NFData b) => NFData (a,b) where rnf = rnf2
 -- |@since 1.4.3.0
@@ -1063,3 +1096,12 @@ instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5, NFData a6, NFDa
 instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5, NFData a6, NFData a7) =>
          NFData2 ((,,,,,,,,) a1 a2 a3 a4 a5 a6 a7) where
   liftRnf2 r r' (x1,x2,x3,x4,x5,x6,x7,x8,x9) = rnf x1 `seq` rnf x2 `seq` rnf x3 `seq` rnf x4 `seq` rnf x5 `seq` rnf x6 `seq` rnf x7 `seq` r x8 `seq` r' x9
+
+----------------------------------------------------------------------------
+-- ByteArray
+
+#if BYTEARRAY_IN_BASE
+-- |@since 1.4.6.0
+instance NFData ByteArray where
+  rnf (ByteArray _) = ()
+#endif
