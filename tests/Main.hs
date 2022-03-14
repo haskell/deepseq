@@ -66,7 +66,7 @@ setSeqState i | 0 <= i && i < 64 = atomicModifyIORef' seqState go
     go x | testBit x i = error ("setSeqState: flag #"++show i++" already set")
          | otherwise   = (setBit x i, ())
 
--- weird type whose NFData instacne calls 'setSeqState' when rnf-ed
+-- weird type whose NFData instance calls 'setSeqState' when rnf-ed
 data SeqSet = SeqSet !Int | SeqIgnore
               deriving Show
 
