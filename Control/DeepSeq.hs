@@ -1,14 +1,16 @@
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE DefaultSignatures #-}
+{-# LANGUAGE EmptyCase #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE Safe #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE EmptyCase #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 #if __GLASGOW_HASKELL__ >= 811 && __GLASGOW_HASKELL__ < 901
 -- For the Option instance (https://gitlab.haskell.org/ghc/ghc/issues/15028)
@@ -18,6 +20,10 @@
 #define BYTEARRAY_IN_BASE (__GLASGOW_HASKELL__ >= 903)
 -- At the moment of writing GHC source tree has not yet bumped `base` version,
 -- so using __GLASGOW_HASKELL__ as a proxy instead of MIN_VERSION_base(4,17,0).
+
+#if MIN_VERSION_base(4,17,0)
+#define HAS_GENERICALLY
+#endif
 
 -----------------------------------------------------------------------------
 -- |
@@ -260,7 +266,7 @@ f $!! x = x `deepseq` f x
 -- >                        evaluate . force =<< hGetContents h
 --
 -- @since 1.2.0.0
-force :: (NFData a) => a -> a
+force :: NFData a => a -> a
 force x = x `deepseq` x
 
 -- | Deeply strict version of 'Control.Applicative.<$>'.
@@ -302,41 +308,41 @@ class NFData a where
     --
     -- === 'Generic' 'NFData' deriving
     --
-    -- Starting with GHC 7.2, you can automatically derive instances
-    -- for types possessing a 'Generic' instance.
+    -- It is possible to derive an instance of 'NFData' for a type @T@
+    -- possessing a 'Generic' instance via @'GHC.Generics.Generically'
+    -- T@ (since GHC 9.4).
     --
-    -- Note: 'Generic1' can be auto-derived starting with GHC 7.4
-    --
-    -- > {-# LANGUAGE DeriveGeneric #-}
+    -- > {-# LANGUAGE DeriveAnyClass     #-}
+    -- > {-# LANGUAGE DeriveGeneric      #-}
+    -- > {-# LANGUAGE DerivingStrategies #-}
+    -- > {-# LANGUAGE DerivingVia        #-}
     -- >
-    -- > import GHC.Generics (Generic, Generic1)
+    -- > import GHC.Generics (Generic, Generic1, Generically(..), Generically1(..))
     -- > import Control.DeepSeq
     -- >
     -- > data Foo a = Foo a String
-    -- >              deriving (Eq, Generic, Generic1)
+    -- >   deriving stock (Eq, Generic, Generic1)
+    -- >   deriving NFData  via Generically (Foo a)
+    -- >   deriving NFData1 via Generically1 Foo
     -- >
-    -- > instance NFData a => NFData (Foo a)
+    -- > data Colour = Red | Green | Blue
+    -- >   deriving stock Generic
+    -- >   deriving NFData via Generically Colour
+    --
+    -- It had been possible to derive it with the @DerivingAnyClass@
+    -- since GHC 7.10 (although at that point the @anyclass@ deriving
+    -- strategy could not be named).
+    --
+    -- >   deriving anyclass (NFData, NFData1)
+    -- >   deriving anyclass NFData
+    --
+    -- @DerivingAnyClass@ is equivalent to writing an empty instance
+    -- instance declaration which relies on generic default methods
+    -- (available since GHC 7.2).
+    --
+    -- > instance NFData  (Foo a)
     -- > instance NFData1 Foo
-    -- >
-    -- > data Colour = Red | Green | Blue
-    -- >               deriving Generic
-    -- >
-    -- > instance NFData Colour
-    --
-    -- Starting with GHC 7.10, the example above can be written more
-    -- concisely by enabling the new @DeriveAnyClass@ extension:
-    --
-    -- > {-# LANGUAGE DeriveGeneric, DeriveAnyClass #-}
-    -- >
-    -- > import GHC.Generics (Generic)
-    -- > import Control.DeepSeq
-    -- >
-    -- > data Foo a = Foo a String
-    -- >              deriving (Eq, Generic, Generic1, NFData, NFData1)
-    -- >
-    -- > data Colour = Red | Green | Blue
-    -- >               deriving (Generic, NFData)
-    -- >
+    -- > instance NFData  Colour
     --
     -- === Compatibility with previous @deepseq@ versions
     --
@@ -367,7 +373,30 @@ class NFData a where
     default rnf :: (Generic a, GNFData Zero (Rep a)) => a -> ()
     rnf = grnf RnfArgs0 . from
 
+#ifdef HAS_GENERICALLY
+instance (Generic a, GNFData Zero (Rep a)) => NFData (Generically a) where
+  rnf :: Generically a -> ()
+  rnf (Generically a) = grnf RnfArgs0 (from a)
+#endif
+
 -- | A class of functors that can be fully evaluated.
+--
+-- It is possible to derive an instance of 'NFData1' for a type
+-- constructor @F@ possessing a 'Generic1' instance via
+-- @'GHC.Generics.Generically1' F@ (since GHC 9.4).
+--
+-- > {-# LANGUAGE DeriveAnyClass     #-}
+-- > {-# LANGUAGE DeriveGeneric      #-}
+-- > {-# LANGUAGE DerivingStrategies #-}
+-- > {-# LANGUAGE DerivingVia        #-}
+-- >
+-- > import GHC.Generics (Generic, Generic1, Generically(..), Generically1(..))
+-- > import Control.DeepSeq
+-- >
+-- > data Foo a = Foo a String
+-- >   deriving stock (Eq, Generic, Generic1)
+-- >   deriving NFData  via Generically (Foo a)
+-- >   deriving NFData1 via Generically1 Foo
 --
 -- @since 1.4.3.0
 class NFData1 f where
@@ -375,11 +404,17 @@ class NFData1 f where
     -- evaluate all sub-components), given an argument to reduce @a@ arguments,
     -- and then return '()'.
     --
-    -- See 'rnf' for the generic deriving.
+    -- See 'rnf' for more information on generic deriving.
     liftRnf :: (a -> ()) -> f a -> ()
 
     default liftRnf :: (Generic1 f, GNFData One (Rep1 f)) => (a -> ()) -> f a -> ()
     liftRnf r = grnf (RnfArgs1 r) . from1
+
+#ifdef HAS_GENERICALLY
+instance (Generic1 f, GNFData One (Rep1 f)) => NFData1 (Generically1 f) where
+  liftRnf :: (a -> ()) -> (Generically1 f a -> ())
+  liftRnf r (Generically1 as) = grnf (RnfArgs1 r) (from1 as)
+#endif
 
 -- | Lift the standard 'rnf' function through the type constructor.
 --
