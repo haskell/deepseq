@@ -1,5 +1,9 @@
 # Changelog for [`deepseq` package](http://hackage.haskell.org/package/deepseq)
 
+## 1.4.8.0
+
+  * Add instances for the indexed `TypeRep`, along with `Module`.
+
 ## 1.4.7.0
 
   * Add instances for `Solo` (GHC-9)
