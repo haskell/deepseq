@@ -1,5 +1,11 @@
 # Changelog for [`deepseq` package](http://hackage.haskell.org/package/deepseq)
 
+## 1.4.??
+
+  * Add instances for `Generically` and `Generically1`. `NFData A`
+    can now be derived via `Generically A` for `Generic A`.
+    `NFData1 F` can be derived via `Generically1 F` for `Generic1 F`.
+
 ## 1.4.7.0
 
   * Add instances for `Solo` (GHC-9)
