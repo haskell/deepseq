@@ -1,5 +1,10 @@
 # Changelog for [`deepseq` package](http://hackage.haskell.org/package/deepseq)
 
+## 1.4.8.0
+
+  * Add `NFData` instance for `MutableByteArray`
+    ([#84](https://github.com/haskell/deepseq/pull/84))
+
 ## 1.4.7.0
 
   * Add instances for `Solo` (GHC-9)
