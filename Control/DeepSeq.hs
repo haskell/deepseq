@@ -139,7 +139,7 @@ import GHC.Tuple (Solo (..))
 #endif
 
 #if BYTEARRAY_IN_BASE
-import Data.Array.Byte (ByteArray(..))
+import Data.Array.Byte (ByteArray(..), MutableByteArray(..))
 #endif
 
 -- | Hidden internal type-class
@@ -968,7 +968,11 @@ instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5, NFData a6, NFDa
 -- ByteArray
 
 #if BYTEARRAY_IN_BASE
--- |@since 1.4.6.0
+-- |@since 1.4.7.0
 instance NFData ByteArray where
   rnf (ByteArray _) = ()
+
+-- |@since 1.4.8.0
+instance NFData (MutableByteArray s) where
+  rnf (MutableByteArray _) = ()
 #endif
