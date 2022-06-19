@@ -3,9 +3,9 @@
 {-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE GADTs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE Safe #-}
+{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE EmptyCase #-}
@@ -152,9 +152,9 @@ instance GNFData arity V1 where
 data Zero
 data One
 
-data RnfArgs arity a where
-  RnfArgs0 :: RnfArgs Zero a
-  RnfArgs1  :: (a -> ()) -> RnfArgs One a
+data family RnfArgs arity a
+data instance RnfArgs Zero a = RnfArgs0
+newtype instance RnfArgs One a = RnfArgs1 (a -> ())
 
 instance GNFData arity U1 where
   grnf _ U1 = ()
