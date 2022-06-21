@@ -4,6 +4,8 @@
 
   * Add `NFData` instance for `MutableByteArray`
     ([#84](https://github.com/haskell/deepseq/pull/84))
+  * Change RnfArgs to be a data family
+    ([#85](https://github.com/haskell/deepseq/pull/85))
 
 ## 1.4.7.0
 
