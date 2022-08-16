@@ -879,10 +879,18 @@ instance NFData CallStack where
 #if MIN_VERSION_ghc_prim(0,7,0)
 -- |@since 1.4.6.0
 instance NFData a => NFData (Solo a) where
+#if MIN_VERSION_ghc_prim(0,10,0)
+  rnf (MkSolo a) = rnf a
+#else
   rnf (Solo a) = rnf a
+#endif
 -- |@since 1.4.6.0
 instance NFData1 Solo where
+#if MIN_VERSION_ghc_prim(0,10,0)
+  liftRnf r (MkSolo a) = r a
+#else
   liftRnf r (Solo a) = r a
+#endif
 #endif
 #endif
 
