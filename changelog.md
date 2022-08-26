@@ -1,5 +1,10 @@
 # Changelog for [`deepseq` package](http://hackage.haskell.org/package/deepseq)
 
+## Upcoming
+
+  * Adapt the rename of the Solo constructor to MkSolo
+    ([#87](https://github.com/haskell/deepseq/pull/87))
+
 ## 1.4.8.0
 
   * Add `NFData` instance for `MutableByteArray`
