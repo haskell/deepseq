@@ -4,6 +4,8 @@
 
   * Adapt the rename of the Solo constructor to MkSolo
     ([#87](https://github.com/haskell/deepseq/pull/87))
+  * Add instances for the indexed `TypeRep`, along with `Module`.
+    ([#83](https://github.com/haskell/deepseq/pull/83))
 
 ## 1.4.8.0
 

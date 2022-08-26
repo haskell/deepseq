@@ -101,7 +101,7 @@ import Data.Array
 import Data.Fixed
 import Data.Version
 import Data.Monoid as Mon
-import Data.Typeable ( TypeRep, TyCon )
+import Data.Typeable ( TypeRep, rnfTypeRep, TyCon, rnfTyCon )
 import Data.Unique ( Unique )
 import Foreign.Ptr
 import Foreign.C.Types
@@ -112,12 +112,12 @@ import Data.Proxy ( Proxy(Proxy) )
 
 #if MIN_VERSION_base(4,10,0)
 import Data.Type.Equality ( (:~:), (:~~:) )
+import qualified Type.Reflection as Reflection
 #else
 import Data.Type.Equality ( (:~:) )
 #endif
 
 import Data.Functor.Identity ( Identity(..) )
-import Data.Typeable ( rnfTypeRep, rnfTyCon )
 import Data.Void ( Void, absurd )
 import Numeric.Natural ( Natural )
 
@@ -644,6 +644,15 @@ instance NFData TypeRep where
 instance NFData TyCon where
     rnf tycon = rnfTyCon tycon
 
+#if MIN_VERSION_base(4,10,0)
+-- |@since 1.4.8.0
+instance NFData (Reflection.TypeRep a) where
+    rnf tr = Reflection.rnfTypeRep tr
+
+-- |@since 1.4.8.0
+instance NFData Reflection.Module where
+    rnf modul = Reflection.rnfModule modul
+#endif
 
 -- | __NOTE__: Only strict in the reference and not the referenced value.
 --
