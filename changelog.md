@@ -1,6 +1,6 @@
 # Changelog for [`deepseq` package](http://hackage.haskell.org/package/deepseq)
 
-## Upcoming
+## 1.4.8.1
 
   * Adapt the rename of the Solo constructor to MkSolo
     ([#87](https://github.com/haskell/deepseq/pull/87))
