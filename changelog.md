@@ -1,5 +1,10 @@
 # Changelog for [`deepseq` package](http://hackage.haskell.org/package/deepseq)
 
+## Upcoming
+
+  * Add quantified superclasses to NFData(1,2)
+    ([#88](https://github.com/haskell/deepseq/issues/88))
+
 ## 1.4.8.1
 
   * Adapt the rename of the Solo constructor to MkSolo
