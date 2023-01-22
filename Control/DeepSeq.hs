@@ -8,6 +8,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE PolyKinds #-}
+{-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE EmptyCase #-}
 
 #if __GLASGOW_HASKELL__ >= 811 && __GLASGOW_HASKELL__ < 901
@@ -370,7 +371,11 @@ class NFData a where
 -- | A class of functors that can be fully evaluated.
 --
 -- @since 1.4.3.0
+#if MIN_VERSION_base(4,18,0)
+class (forall a. NFData a => NFData (f a)) => NFData1 f where
+#else
 class NFData1 f where
+#endif
     -- | 'liftRnf' should reduce its argument to normal form (that is, fully
     -- evaluate all sub-components), given an argument to reduce @a@ arguments,
     -- and then return '()'.
@@ -390,7 +395,11 @@ rnf1 = liftRnf rnf
 -- | A class of bifunctors that can be fully evaluated.
 --
 -- @since 1.4.3.0
+#if MIN_VERSION_base(4,18,0)
+class (forall a. NFData a => NFData1 (p a)) => NFData2 p where
+#else
 class NFData2 p where
+#endif
     -- | 'liftRnf2' should reduce its argument to normal form (that
     -- is, fully evaluate all sub-components), given functions to
     -- reduce @a@ and @b@ arguments respectively, and then return '()'.
