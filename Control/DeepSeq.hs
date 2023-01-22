@@ -8,8 +8,11 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE EmptyCase #-}
+
+#if MIN_VERSION_base(4,12,0)
+{-# LANGUAGE QuantifiedConstraints #-}
+#endif
 
 #if __GLASGOW_HASKELL__ >= 811 && __GLASGOW_HASKELL__ < 901
 -- For the Option instance (https://gitlab.haskell.org/ghc/ghc/issues/15028)
@@ -371,7 +374,7 @@ class NFData a where
 -- | A class of functors that can be fully evaluated.
 --
 -- @since 1.4.3.0
-#if MIN_VERSION_base(4,18,0)
+#if MIN_VERSION_base(4,12,0)
 class (forall a. NFData a => NFData (f a)) => NFData1 f where
 #else
 class NFData1 f where
@@ -395,7 +398,7 @@ rnf1 = liftRnf rnf
 -- | A class of bifunctors that can be fully evaluated.
 --
 -- @since 1.4.3.0
-#if MIN_VERSION_base(4,18,0)
+#if MIN_VERSION_base(4,12,0)
 class (forall a. NFData a => NFData1 (p a)) => NFData2 p where
 #else
 class NFData2 p where
