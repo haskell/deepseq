@@ -48,10 +48,15 @@ jobs:
             compilerVersion: 8.10.7
             setup-method: ghcup
             allow-failure: false
+          - compiler: ghc-8.8.4
+            compilerKind: ghc
+            compilerVersion: 8.8.4
+            setup-method: ghcup
+            allow-failure: false
           - compiler: ghc-8.6.5
             compilerKind: ghc
             compilerVersion: 8.6.5
-            setup-method: hvr-ppa
+            setup-method: ghcup
             allow-failure: false
       fail-fast: false
     steps:
