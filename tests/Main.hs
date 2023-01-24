@@ -1,6 +1,5 @@
 -- Code reused from http://hackage.haskell.org/package/deepseq-generics
 
-{-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE TupleSections #-}
@@ -20,16 +19,6 @@ import System.IO.Unsafe (unsafePerformIO)
 
 -- IUT
 import Control.DeepSeq
-
--- needed for GHC-7.4 compatibility
-#if !MIN_VERSION_base(4,6,0)
-atomicModifyIORef' :: IORef a -> (a -> (a,b)) -> IO b
-atomicModifyIORef' ref f = do
-    b <- atomicModifyIORef ref
-            (\x -> let (a, b) = f x
-                    in (a, a `seq` b))
-    b `seq` return b
-#endif
 
 ----------------------------------------------------------------------------
 -- simple hacky abstraction for testing forced evaluation via `rnf`-like functions
@@ -98,9 +87,7 @@ testCase testName io = do
 
 case_1, case_2, case_3 :: IO ()
 case_4_1, case_4_2, case_4_3, case_4_4 :: IO ()
-#if __GLASGOW_HASKELL__ >= 706
 case_4_1b, case_4_2b, case_4_3b, case_4_4b :: IO ()
-#endif
 
 newtype Case1 = Case1 Int
               deriving (Generic)
@@ -136,16 +123,12 @@ data Case4 a = Case4a
              | Case4b a a
              | Case4c a (Case4 a)
              deriving ( Generic
-#if __GLASGOW_HASKELL__ >= 706
                       , Generic1
-#endif
                       )
 
 instance NFData a => NFData (Case4 a)
 
-#if __GLASGOW_HASKELL__ >= 706
 instance NFData1 Case4
-#endif
 
 case_4_1 = testCase "Case4.1" $ withSeqState 0x0 $ do
     evaluate $ rnf $ (Case4a :: Case4 SeqSet)
@@ -162,7 +145,6 @@ case_4_4 = testCase "Case4.4" $ withSeqState 0xffffffffffffffff $ do
     genCase n | n > 1      = Case4c (SeqSet n) (genCase (n-1))
               | otherwise  = Case4b (SeqSet 0) (SeqSet 1)
 
-#if __GLASGOW_HASKELL__ >= 706
 case_4_1b = testCase "Case4.1b" $ withSeqState 0x0 $ do
     evaluate $ rnf1 $ (Case4a :: Case4 SeqSet)
 
@@ -177,7 +159,6 @@ case_4_4b = testCase "Case4.4b" $ withSeqState 0xffffffffffffffff $ do
   where
     genCase n | n > 1      = Case4c (SeqSet n) (genCase (n-1))
               | otherwise  = Case4b (SeqSet 0) (SeqSet 1)
-#endif
 
 ----------------------------------------------------------------------------
 
@@ -185,7 +166,5 @@ main :: IO ()
 main = sequence_
   [ case_1, case_2, case_3
   , case_4_1, case_4_2, case_4_3, case_4_4
-#if __GLASGOW_HASKELL__ >= 706
   , case_4_1b, case_4_2b, case_4_3b, case_4_4b
-#endif
   ]
