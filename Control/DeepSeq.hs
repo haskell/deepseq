@@ -18,10 +18,6 @@
 {-# OPTIONS_GHC -Wno-deprecations #-}
 #endif
 
-#define BYTEARRAY_IN_BASE (__GLASGOW_HASKELL__ >= 903)
--- At the moment of writing GHC source tree has not yet bumped `base` version,
--- so using __GLASGOW_HASKELL__ as a proxy instead of MIN_VERSION_base(4,17,0).
-
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Control.DeepSeq
@@ -141,7 +137,7 @@ import GHC.Tuple (Solo (..))
 #endif
 #endif
 
-#if BYTEARRAY_IN_BASE
+#if MIN_VERSION_base(4,17,0)
 import Data.Array.Byte (ByteArray(..), MutableByteArray(..))
 #endif
 
@@ -995,7 +991,7 @@ instance (NFData a1, NFData a2, NFData a3, NFData a4, NFData a5, NFData a6, NFDa
 ----------------------------------------------------------------------------
 -- ByteArray
 
-#if BYTEARRAY_IN_BASE
+#if MIN_VERSION_base(4,17,0)
 -- |@since 1.4.7.0
 instance NFData ByteArray where
   rnf (ByteArray _) = ()
