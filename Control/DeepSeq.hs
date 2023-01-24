@@ -98,8 +98,8 @@ import Data.Complex
 import Data.Fixed
 import Data.Functor.Compose
 import Data.Functor.Identity (Identity (..))
-import Data.Functor.Product qualified as Functor
-import Data.Functor.Sum qualified as Functor
+import qualified Data.Functor.Product as Functor
+import qualified Data.Functor.Sum as Functor
 import Data.IORef
 import Data.Int
 import Data.List.NonEmpty (NonEmpty (..))
@@ -123,7 +123,7 @@ import GHC.Stack.Types (CallStack (..), SrcLoc (..))
 import Numeric.Natural (Natural)
 import System.Exit (ExitCode (..))
 import System.Mem.StableName (StableName)
-import Type.Reflection qualified as Reflection
+import qualified Type.Reflection as Reflection
 
 #ifdef MIN_VERSION_ghc_prim
 #if MIN_VERSION_ghc_prim(0,7,0)
