@@ -8,10 +8,7 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE EmptyCase #-}
-
-#if MIN_VERSION_base(4,12,0)
 {-# LANGUAGE QuantifiedConstraints #-}
-#endif
 
 #if __GLASGOW_HASKELL__ >= 811 && __GLASGOW_HASKELL__ < 901
 -- For the Option instance (https://gitlab.haskell.org/ghc/ghc/issues/15028)
@@ -108,26 +105,17 @@ import System.Exit ( ExitCode(..) )
 import System.Mem.StableName ( StableName )
 import Data.Ord ( Down(Down) )
 import Data.Proxy ( Proxy(Proxy) )
-
-#if MIN_VERSION_base(4,10,0)
 import Data.Type.Equality ( (:~:), (:~~:) )
 import qualified Type.Reflection as Reflection
-#else
-import Data.Type.Equality ( (:~:) )
-#endif
-
 import Data.Functor.Identity ( Identity(..) )
 import Data.Void ( Void, absurd )
 import Numeric.Natural ( Natural )
-
 import Data.List.NonEmpty ( NonEmpty (..) )
 import Data.Semigroup as Semi
-
 import GHC.Stack.Types ( CallStack(..), SrcLoc(..) )
 import Data.Functor.Compose
 import qualified Data.Functor.Sum as Functor
 import qualified Data.Functor.Product as Functor
-
 import GHC.Fingerprint.Type ( Fingerprint(..) )
 import GHC.Generics
 
@@ -266,14 +254,7 @@ force x = x `deepseq` x
 --
 -- @since 1.4.3.0
 (<$!!>) :: (Monad m, NFData b) => (a -> b) -> m a -> m b
-#if MIN_VERSION_base(4,8,0)
--- Minor optimisation for AMP; this avoids the redundant indirection
--- through 'return' in case GHC isn't smart enough to optimise it away
--- on its own
 f <$!!> m = m >>= \x -> pure $!! f x
-#else
-f <$!!> m = m >>= \x -> return $!! f x
-#endif
 infixl 4 <$!!>
 
 -- | Reduce to weak head normal form
@@ -368,12 +349,10 @@ class NFData a where
 
 -- | A class of functors that can be fully evaluated.
 --
+-- In `deepseq-1.5.0.0` this class was updated to include superclasses.
+--
 -- @since 1.4.3.0
-#if MIN_VERSION_base(4,12,0)
 class (forall a. NFData a => NFData (f a)) => NFData1 f where
-#else
-class NFData1 f where
-#endif
     -- | 'liftRnf' should reduce its argument to normal form (that is, fully
     -- evaluate all sub-components), given an argument to reduce @a@ arguments,
     -- and then return '()'.
@@ -392,12 +371,10 @@ rnf1 = liftRnf rnf
 
 -- | A class of bifunctors that can be fully evaluated.
 --
+-- In `deepseq-1.5.0.0` this class was updated to include superclasses.
+--
 -- @since 1.4.3.0
-#if MIN_VERSION_base(4,12,0)
 class (forall a. NFData a => NFData1 (p a)) => NFData2 p where
-#else
-class NFData2 p where
-#endif
     -- | 'liftRnf2' should reduce its argument to normal form (that
     -- is, fully evaluate all sub-components), given functions to
     -- reduce @a@ and @b@ arguments respectively, and then return '()'.
@@ -449,14 +426,12 @@ instance NFData1 ((:~:) a) where liftRnf _ = rwhnf
 -- | @since 1.4.3.0
 instance NFData2 (:~:) where liftRnf2 _ _ = rwhnf
 
-#if MIN_VERSION_base(4,10,0)
 -- | @since 1.4.3.0
 instance NFData (a :~~: b) where rnf = rwhnf
 -- | @since 1.4.3.0
 instance NFData1 ((:~~:) a) where liftRnf _ = rwhnf
 -- | @since 1.4.3.0
 instance NFData2 (:~~:) where liftRnf2 _ _ = rwhnf
-#endif
 
 -- |@since 1.4.0.0
 instance NFData a => NFData (Identity a) where
@@ -651,7 +626,6 @@ instance NFData TypeRep where
 instance NFData TyCon where
     rnf tycon = rnfTyCon tycon
 
-#if MIN_VERSION_base(4,10,0)
 -- |@since 1.4.8.0
 instance NFData (Reflection.TypeRep a) where
     rnf tr = Reflection.rnfTypeRep tr
@@ -659,7 +633,6 @@ instance NFData (Reflection.TypeRep a) where
 -- |@since 1.4.8.0
 instance NFData Reflection.Module where
     rnf modul = Reflection.rnfModule modul
-#endif
 
 -- | __NOTE__: Only strict in the reference and not the referenced value.
 --
@@ -806,10 +779,8 @@ instance NFData CFpos where rnf = rwhnf
 -- |@since 1.4.0.0
 instance NFData CJmpBuf where rnf = rwhnf
 
-#if MIN_VERSION_base(4,10,0)
 -- | @since 1.4.3.0
 instance NFData CBool where rnf = rwhnf
-#endif
 
 ----------------------------------------------------------------------------
 -- System.Exit
