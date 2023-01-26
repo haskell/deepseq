@@ -1,6 +1,6 @@
 cabal-version:  1.12
 name:           deepseq
-version:        1.4.9.0
+version:        1.5.0.0
 -- NOTE: Don't forget to update ./changelog.md
 
 license:        BSD3
@@ -30,10 +30,8 @@ tested-with:
   GHC==9.2.5,
   GHC==9.0.2,
   GHC==8.10.7,
-  GHC==8.6.5,
-  GHC==8.4.4,
-  GHC==8.2.2,
-  GHC==8.0.2
+  GHC==8.8.4,
+  GHC==8.6.5
 
 extra-source-files: changelog.md
 
@@ -60,12 +58,11 @@ library
   if impl(ghc >=9.0)
     build-depends: ghc-prim
 
-  build-depends: base       >= 4.9 && < 4.19,
+  build-depends: base       >= 4.12 && < 4.19,
                  array      >= 0.4 && < 0.6
   ghc-options: -Wall
 
   exposed-modules: Control.DeepSeq
-  other-modules:   Control.DeepSeq.BackDoor
 
 test-suite test
   Default-Language: Haskell2010
