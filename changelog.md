@@ -4,6 +4,8 @@
 
   * Add quantified superclasses to NFData(1,2)
     ([#88](https://github.com/haskell/deepseq/issues/88))
+  * Alter superclasses for Data.Functor.{Sum, Product}
+    ([#95])(https://github.com/haskell/deepseq/pull/95)
   * Drop support for GHC < 8.6
     ([#94](https://github.com/haskell/deepseq/pull/94))
 
