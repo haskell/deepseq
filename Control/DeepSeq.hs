@@ -499,26 +499,33 @@ instance NFData1 Ratio where
 instance (NFData1 f, NFData1 g) => NFData1 (Compose f g) where
   liftRnf r = liftRnf (liftRnf r) . getCompose
 
--- | @since 1.4.3.0
-instance (NFData1 f, NFData1 g, NFData a) => NFData (Compose f g a) where
-  rnf = rnf1
+-- | Note: in @deepseq-1.5.0.0@ this instance's superclasses were changed.
+-- 
+-- @since 1.4.3.0
+instance (NFData (f (g a))) => NFData (Compose f g a) where
+  rnf (Compose fga) = rnf fga
 
 -- | @since 1.4.3.0
 instance (NFData1 f, NFData1 g) => NFData1 (Functor.Sum f g) where
   liftRnf rnf0 (Functor.InL l) = liftRnf rnf0 l
   liftRnf rnf0 (Functor.InR r) = liftRnf rnf0 r
 
--- | @since 1.4.3.0
-instance (NFData1 f, NFData1 g, NFData a) => NFData (Functor.Sum f g a) where
-  rnf = rnf1
+-- | Note: in @deepseq-1.5.0.0@ this instance's superclasses were changed.
+-- 
+-- @since 1.4.3.0
+instance (NFData (f a), NFData (g a)) => NFData (Functor.Sum f g a) where
+  rnf (Functor.InL fa) = rnf fa
+  rnf (Functor.InR ga) = rnf ga
 
 -- | @since 1.4.3.0
 instance (NFData1 f, NFData1 g) => NFData1 (Functor.Product f g) where
   liftRnf rnf0 (Functor.Pair f g) = liftRnf rnf0 f `seq` liftRnf rnf0 g
 
--- | @since 1.4.3.0
-instance (NFData1 f, NFData1 g, NFData a) => NFData (Functor.Product f g a) where
-  rnf = rnf1
+-- | Note: in @deepseq-1.5.0.0@ this instance's superclasses were changed.
+-- 
+-- @since 1.4.3.0
+instance (NFData (f a), NFData (g a)) => NFData (Functor.Product f g a) where
+  rnf (Functor.Pair fa ga) = rnf fa `seq` rnf ga
 
 instance NFData a => NFData (Ratio a) where
   rnf x = rnf (numerator x, denominator x)
