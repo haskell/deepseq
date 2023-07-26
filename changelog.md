@@ -8,7 +8,7 @@
     ([#95])(https://github.com/haskell/deepseq/pull/95)
   * Drop support for GHC < 8.6
     ([#94](https://github.com/haskell/deepseq/pull/94))
-  * Let `instance NFData [a]` to fuse
+  * List fusion in `instance NFData [a]` reduces allocations
     ([#99](https://github.com/haskell/deepseq/pull/99))
 
 ## 1.4.8.1
