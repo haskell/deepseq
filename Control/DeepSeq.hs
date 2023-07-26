@@ -558,10 +558,8 @@ instance NFData a => NFData [a] where rnf = rnf1
 
 -- | @since 1.4.3.0
 instance NFData1 [] where
-  liftRnf r = go
-   where
-    go [] = ()
-    go (x : xs) = r x `seq` go xs
+  liftRnf f = foldr (\x r -> f x `seq` r) ()
+  {-# INLINABLE liftRnf #-}
 
 -- | @since 1.4.0.0
 instance NFData a => NFData (ZipList a) where rnf = rnf1
