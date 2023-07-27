@@ -2,6 +2,10 @@
 
 ## Upcoming
 
+
+
+## 1.5.0.0
+
   * Add quantified superclasses to NFData(1,2)
     ([#88](https://github.com/haskell/deepseq/issues/88))
   * Alter superclasses for Data.Functor.{Sum, Product}
