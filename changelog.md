@@ -2,7 +2,8 @@
 
 ## Upcoming
 
-
+  * Deprecate function instance starting in GHC 9.10 (`base-4.20`)
+    ([#16](https://github.com/haskell/deepseq/issues/16), [#47](https://github.com/haskell/deepseq/pull/47))
 
 ## 1.5.1.0
 

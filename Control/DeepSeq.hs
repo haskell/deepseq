@@ -531,7 +531,11 @@ instance NFData1 Fixed where liftRnf _ = rwhnf
 --  This assumes that WHNF is equivalent to NF for functions.
 --
 --  @since 1.3.0.0
+#if MIN_VERSION_base(4,20,0)
+instance {-# DEPRECATED "NFData is not well-defined on function types." #-} NFData (a -> b) where rnf = rwhnf
+#else
 instance NFData (a -> b) where rnf = rwhnf
+#endif
 
 -- Rational and complex numbers.
 
