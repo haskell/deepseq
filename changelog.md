@@ -2,7 +2,8 @@
 
 ## Upcoming
 
-
+* Add `NFData` instance for `ForeignPtr` ([#50](https://github.com/haskell/deepseq/pull/50))
+* Add `NFData` instance for `TVar` ([#50](https://github.com/haskell/deepseq/pull/50))
 
 ## 1.5.1.0
 

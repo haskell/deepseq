@@ -119,6 +119,7 @@ import Foreign.C.Types
 import Foreign.Ptr
 import GHC.Arr (Array)
 import qualified GHC.Arr
+import GHC.Conc (TVar)
 import GHC.Fingerprint.Type (Fingerprint (..))
 import GHC.Generics
 import GHC.Stack.Types (CallStack (..), SrcLoc (..))
@@ -135,6 +136,12 @@ import GHC.Tuple (Solo (..))
 
 #if MIN_VERSION_base(4,17,0)
 import Data.Array.Byte (ByteArray(..), MutableByteArray(..))
+#endif
+
+#if MIN_VERSION_base(4,8,0)
+import Foreign.ForeignPtr
+#else
+import Foreign.ForeignPtr.Safe
 #endif
 
 -- | Hidden internal type-class
@@ -758,6 +765,14 @@ instance NFData (MVar a) where
 instance NFData1 MVar where
   liftRnf _ = rwhnf
 
+-- | @since 1.5.X
+instance NFData (TVar a) where
+    rnf = rwhnf
+
+-- | @since 1.5.X
+instance NFData1 TVar where
+    liftRnf _ = rwhnf
+
 ----------------------------------------------------------------------------
 -- GHC Specifics
 
@@ -783,6 +798,20 @@ instance NFData (FunPtr a) where
 -- | @since 1.4.3.0
 instance NFData1 FunPtr where
   liftRnf _ = rwhnf
+
+----------------------------------------------------------------------------
+-- Foreign.Ptr
+
+-- | __NOTE__: Only strict in the reference and not the referenced value. Not
+--   strict in the finalizers.
+
+-- | @since 1.5.X
+instance NFData (ForeignPtr a) where
+    rnf = rwhnf
+
+-- | @since 1.5.X
+instance NFData1 ForeignPtr where
+    liftRnf _ = rwhnf
 
 ----------------------------------------------------------------------------
 -- Foreign.C.Types
