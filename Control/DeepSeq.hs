@@ -9,6 +9,10 @@
 {-# LANGUAGE Trustworthy #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE RankNTypes #-}
 
 #if __GLASGOW_HASKELL__ >= 811 && __GLASGOW_HASKELL__ < 901
 -- For the Option instance (https://gitlab.haskell.org/ghc/ghc/issues/15028)
@@ -80,6 +84,10 @@ module Control.DeepSeq (
   rwhnf,
   Unit(..),
 
+  -- * Deriving newtype
+  GenericFunctionsAreNF (..),
+  GenericFunctionsAreNF1 (..),
+
   -- * Liftings of the 'NFData' class
 
   -- ** For unary constructors
@@ -138,11 +146,11 @@ import Data.Array.Byte (ByteArray(..), MutableByteArray(..))
 #endif
 
 -- | Hidden internal type-class
-class GNFData arity f where
-  grnf :: RnfArgs arity a -> f a -> ()
+class GNFData arity allowFuncs f where
+  grnf :: RnfArgs arity a -> AllowFuncs allowFuncs -> f a -> ()
 
-instance GNFData arity V1 where
-  grnf _ x = case x of {}
+instance GNFData arity allowFuncs V1 where
+  grnf _ _ x = case x of {}
 
 data Zero
 
@@ -154,40 +162,69 @@ data instance RnfArgs Zero a = RnfArgs0
 
 newtype instance RnfArgs One a = RnfArgs1 (a -> ())
 
-instance GNFData arity U1 where
-  grnf _ U1 = ()
+data AllowFuncs a where
+  AllowsFuncs :: AllowFuncs True
+  DisallowsFuncs :: AllowFuncs False
 
-instance NFData a => GNFData arity (K1 i a) where
-  grnf _ = rnf . unK1
+instance GNFData arity allowFuncs U1 where
+  grnf _ _ U1 = ()
+
+instance NFData a => GNFData arity allowFuncs (K1 i a) where
+  grnf _ _ = rnf . unK1
   {-# INLINEABLE grnf #-}
 
-instance GNFData arity a => GNFData arity (M1 i c a) where
-  grnf args = grnf args . unM1
+-- | Special instance that allows functions to have NF data.
+instance {-# OVERLAPPING #-} GNFData arity 'True (K1 i (a -> b)) where
+  grnf _ AllowsFuncs = rwhnf . unK1
   {-# INLINEABLE grnf #-}
 
-instance GNFData arity (URec a) where
-  grnf _ = rwhnf -- Every URec data instance consists of a single data
+instance GNFData arity allowFuncs a => GNFData arity allowFuncs (M1 i c a) where
+  grnf args allowFuncs = grnf args allowFuncs . unM1
+  {-# INLINEABLE grnf #-}
+
+instance GNFData arity allowFuncs (URec a) where
+  grnf _ _ = rwhnf -- Every URec data instance consists of a single data
   -- constructor containing a single strict field, so reducing
   -- any URec instance to WHNF suffices to reduce it to NF.
   {-# INLINEABLE grnf #-}
 
-instance (GNFData arity a, GNFData arity b) => GNFData arity (a :*: b) where
-  grnf args (x :*: y) = grnf args x `seq` grnf args y
+instance (GNFData arity allowFuncs a, GNFData arity allowFuncs b) => GNFData arity allowFuncs (a :*: b) where
+  grnf args allowFuncs (x :*: y) = grnf args allowFuncs x `seq` grnf args allowFuncs y
   {-# INLINEABLE grnf #-}
 
-instance (GNFData arity a, GNFData arity b) => GNFData arity (a :+: b) where
-  grnf args (L1 x) = grnf args x
-  grnf args (R1 x) = grnf args x
+instance (GNFData arity allowFuncs a, GNFData arity allowFuncs b) => GNFData arity allowFuncs (a :+: b) where
+  grnf args allowFuncs (L1 x) = grnf args allowFuncs x
+  grnf args allowFuncs (R1 x) = grnf args allowFuncs x
   {-# INLINEABLE grnf #-}
 
-instance GNFData One Par1 where
-  grnf (RnfArgs1 r) = r . unPar1
+instance GNFData One allowFuncs Par1 where
+  grnf (RnfArgs1 r) _ = r . unPar1
 
-instance NFData1 f => GNFData One (Rec1 f) where
-  grnf (RnfArgs1 r) = liftRnf r . unRec1
+instance NFData1 f => GNFData One allowFuncs (Rec1 f) where
+  grnf (RnfArgs1 r) _ = liftRnf r . unRec1
 
-instance (NFData1 f, GNFData One g) => GNFData One (f :.: g) where
-  grnf args = liftRnf (grnf args) . unComp1
+instance (NFData1 f, GNFData One allowFuncs g) => GNFData One allowFuncs (f :.: g) where
+  grnf args allowFuncs = liftRnf (grnf args allowFuncs) . unComp1
+
+-- | Use this newtype to derive 'NFData' instances for generic data types that
+-- have functions in them if you want the functions to be evaluated to working
+-- normal head form when the data type is 'rnf'd.
+--
+-- The 'NFData' instance for functions will become disallowed in a future version,
+-- so this allows you to derive instances for structures with functions inside.
+newtype GenericFunctionsAreNF a = GenericFunctionsAreNF a
+
+instance (Generic a, GNFData Zero True (Rep a)) => NFData (GenericFunctionsAreNF a) where
+  rnf (GenericFunctionsAreNF a) = grnf RnfArgs0 AllowsFuncs $ from a
+
+-- | Same as 'GenericFunctionsAreNF', but for 'NFData1'
+newtype GenericFunctionsAreNF1 f a = GenericFunctionsAreNF1 (f a)
+
+instance (Generic (f a), GNFData Zero True (Rep (f a))) => NFData (GenericFunctionsAreNF1 f a) where
+  rnf (GenericFunctionsAreNF1 a) = grnf RnfArgs0 AllowsFuncs $ from a
+
+instance (Generic1 f, GNFData One True (Rep1 f), (forall a. NFData a => NFData (GenericFunctionsAreNF1 f a))) => NFData1 (GenericFunctionsAreNF1 f) where
+  liftRnf f (GenericFunctionsAreNF1 a) = grnf (RnfArgs1 f) AllowsFuncs $ from1 a
 
 infixr 0 $!!
 
@@ -360,8 +397,8 @@ class NFData a where
   -- > {-# LANGUAGE BangPatterns #-}
   -- > instance NFData Colour where rnf !_ = ()
   rnf :: a -> ()
-  default rnf :: (Generic a, GNFData Zero (Rep a)) => a -> ()
-  rnf = grnf RnfArgs0 . from
+  default rnf :: (Generic a, GNFData Zero False (Rep a)) => a -> ()
+  rnf = grnf RnfArgs0 DisallowsFuncs . from
 
 -- | A class of functors that can be fully evaluated.
 --
@@ -375,8 +412,8 @@ class (forall a. NFData a => NFData (f a)) => NFData1 f where
   --
   -- See 'rnf' for the generic deriving.
   liftRnf :: (a -> ()) -> f a -> ()
-  default liftRnf :: (Generic1 f, GNFData One (Rep1 f)) => (a -> ()) -> f a -> ()
-  liftRnf r = grnf (RnfArgs1 r) . from1
+  default liftRnf :: (Generic1 f, GNFData One False (Rep1 f)) => (a -> ()) -> f a -> ()
+  liftRnf r = grnf (RnfArgs1 r) DisallowsFuncs . from1
 
 -- | Lift the standard 'rnf' function through the type constructor.
 --

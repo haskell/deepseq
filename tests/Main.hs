@@ -2,6 +2,10 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE TupleSections #-}
+{-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE DerivingVia #-}
+{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE BangPatterns #-}
 
 module Main (main) where
 
@@ -168,6 +172,49 @@ case_4_4b = testCase "Case4.4b" $ withSeqState 0xffffffffffffffff $ do
 
 ----------------------------------------------------------------------------
 
+-- Case 5 - function NF via newtype
+
+data FunctionStore f  a = MkFunctionStore
+  { f1 :: Int -> Int
+  , f2 :: Word -> Char
+  , f3 :: String -> f Word -> Int
+  , notF1 :: [a]
+  , notF :: String
+  }
+  deriving (Generic, Generic1)
+  deriving NFData via (GenericFunctionsAreNF (FunctionStore f a))
+  deriving NFData1 via (GenericFunctionsAreNF1 (FunctionStore f))
+
+case_5_1 :: IO ()
+case_5_1 = testCase "Case5.1" $ evaluate $ rnf $ MkFunctionStore
+  { f1 = id
+  , f2 = const 'A'
+  , f3 = let res = 1 + 1 in \_s _fi -> res
+  , notF1 = ["string"]
+  , notF = "FS"
+  }
+
+case_5_2 :: IO ()
+case_5_2 = testCase "Case5.2" $ evaluate $ rnf1 $ MkFunctionStore
+  { f1 = id
+  , f2 = const 'A'
+  , f3 = let res = 1 + 1 in \_s _fi -> res
+  , notF1 = ["string"]
+  , notF = "FS"
+  }
+
+case_5_3 :: IO ()
+case_5_3 = testCase "Case5.3" $ (>>= either (\(SomeException _) -> (pure ())) (const (error "expected exception"))) $ try $ evaluate $ rnf1 $ MkFunctionStore
+  { f1 = id
+  , f2 = const 'A'
+  , f3 = let !res = 1 + error "hidden exception" in \_s _fi -> res
+  , notF1 = ["string"]
+  , notF = "FS"
+  }
+
+
+----------------------------------------------------------------------------
+
 main :: IO ()
 main =
   sequence_
@@ -182,4 +229,7 @@ main =
     , case_4_2b
     , case_4_3b
     , case_4_4b
+    , case_5_1
+    , case_5_2
+    , case_5_3
     ]
