@@ -9,7 +9,7 @@ genNFData n =
     , "         NFData1 ((" ++ replicate (n - 1) ',' ++ ") " ++ intercalate " " as1  ++ ") where liftRnf = liftRnf2 rnf"
     , "instance (" ++ ctx2 ++ ") =>"
     , "         NFData2 ((" ++ replicate (n - 1) ',' ++ ") " ++ intercalate " " as2  ++ ") where"
-    , "  liftRnf2 r r' (" ++ intercalate "," xs ++ ") = " ++ implemantation
+    , "  liftRnf2 r r' (" ++ intercalate "," xs ++ ") = " ++ implementation
     ]
   where
     as0 = take (n - 0) $ ('a' :) . show <$> [1..]
@@ -22,7 +22,7 @@ genNFData n =
     ctx1 = intercalate ", " $ ("NFData " ++) <$> as1
     ctx2 = intercalate ", " $ ("NFData " ++) <$> as2
 
-    implemantation
+    implementation
         = intercalate " `seq` "
         $ zipWith (\l r -> l ++ " " ++ r)
             (replicate (n-2) "rnf" ++ ["r", "r'"])
