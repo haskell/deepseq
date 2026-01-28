@@ -161,7 +161,7 @@
     implementation (based on code from `deepseq-generics`)
 
     **Compatibility Note**: if you need the exact default-method
-    semantics of `deepseq` prior to 1.4, replace occurences of
+    semantics of `deepseq` prior to 1.4, replace occurrences of
 
         instance NFData XYZ
 
